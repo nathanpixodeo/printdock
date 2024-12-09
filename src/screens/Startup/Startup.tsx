@@ -15,6 +15,7 @@ import { NetworkInfo } from 'react-native-network-info';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { Buffer } from 'buffer';
 import BluetoothSerial from 'react-native-bluetooth-serial';
+import RNXprinter from "react-native-esc-pos-xprinter";
 
 export default function PrintServerScreen() {
   const [devices, setDevices] = useState([]);
@@ -27,23 +28,41 @@ export default function PrintServerScreen() {
 
   useEffect(() => {
     NetworkInfo.getIPV4Address().then((ipv4Address: any) => { setDeviceIp(ipv4Address) });
-    requestBluetoothPermissions();
     listBluetoothDevices();
   }, []);
 
   const listBluetoothDevices = async () => {
     try {
+      // Ensure permissions are granted before proceeding
+      const hasPermissions = await requestBluetoothPermissions();
+      console.log();
+      if (!hasPermissions) {
+        Alert.alert('Permission Denied', 'Bluetooth permissions are required to list devices.');
+        return;
+      }
+
+      // Check if Bluetooth is enabled
       const isEnabled = await BluetoothSerial.isEnabled();
       if (!isEnabled) {
         await BluetoothSerial.enable();
       }
+
+      // List paired devices
       const pairedDevices = await BluetoothSerial.list();
+      console.log('pairedDevices', pairedDevices);
       setDevices(pairedDevices);
     } catch (error) {
       console.error('Error listing Bluetooth devices:', error);
       Alert.alert('Error', 'Failed to list Bluetooth devices.');
     }
   };
+
+
+  const printText = async (textData: any) => {
+    await RNXprinter.connectPrinter(device.id);
+    RNXprinter.pushText(textData, 0);
+  }
+
 
   // Print binary data
   const printBinary = async (binaryData: any) => {
@@ -55,17 +74,8 @@ export default function PrintServerScreen() {
         return;
       }
 
-      // List paired devices
-      const devices = await BluetoothSerial.list();
-      const printer = devices.find((device) => device.name.includes("MP583"));
-
-      if (!printer) {
-        console.error("No Bluetooth printer found!");
-        return;
-      }
-
       // Connect to the printer
-      await BluetoothSerial.connect(printer.id);
+      await BluetoothSerial.connect(device.id);
 
       // Send binary data to the printer
       const buffer = Buffer.from(binaryData, "binary"); // Ensure data is handled as raw binary
@@ -76,13 +86,6 @@ export default function PrintServerScreen() {
       console.error("Error printing:", error);
     }
   };
-
-  // const getXprinterDevices = async () => {
-  //   const printerList = await RNXprinter.getDeviceList();
-  //   console.log(printerList);
-  //   const connected = await RNXprinter.connectPrinter(printerList[0].address);
-  //   console.log('connected', connected);
-  // }
 
   const startPrintServer = () => {
     if (serverRunning) {
@@ -98,8 +101,15 @@ export default function PrintServerScreen() {
     const newServer = TcpSocket.createServer((socket) => {
       let binaryData = Buffer.alloc(0);
 
-      socket.on('data', (chunk) => {
-        binaryData = Buffer.concat([binaryData, Buffer.from(chunk)]);
+      socket.on('data', async (chunk) => {
+        if (Buffer.isBuffer(chunk)) {
+          binaryData = Buffer.concat([binaryData, chunk]);
+        } else {
+          const textData = chunk.toString('utf8');
+          await printText(textData).catch((error) => {
+            console.error('Error printing text:', error);
+          });
+        }
       });
 
       socket.on('error', (error) => {
@@ -107,7 +117,6 @@ export default function PrintServerScreen() {
       });
 
       socket.on('close', async () => {
-        console.log('Connection closed');
         if (binaryData.length > 0) {
           await printBinary(binaryData);
         } else {
@@ -148,8 +157,7 @@ export default function PrintServerScreen() {
         if (scanPermission !== RESULTS.GRANTED) {
           const scanRequest = await request(PERMISSIONS.ANDROID.BLUETOOTH_SCAN);
           if (scanRequest !== RESULTS.GRANTED) {
-            Alert.alert('Permission Denied', 'Bluetooth scan permission is required.');
-            return;
+            return false; // Permission not granted
           }
         }
 
@@ -158,21 +166,22 @@ export default function PrintServerScreen() {
         if (connectPermission !== RESULTS.GRANTED) {
           const connectRequest = await request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
           if (connectRequest !== RESULTS.GRANTED) {
-            Alert.alert('Permission Denied', 'Bluetooth connect permission is required.');
-            return;
+            return false; // Permission not granted
           }
         }
+
+        return true; // Permissions granted
       } catch (error) {
         console.error('Permission error:', error);
+        return false; // Error in permissions check
       }
-    } else {
-      Alert.alert('Not Required', 'Bluetooth permissions are not required on this Android version.');
     }
+    return true; // Permissions not required on this Android version
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Print Server</Text>
+      <Text style={styles.title}>Network Print Server</Text>
 
       <Text style={styles.label}>LAN IP Address:</Text>
       <Text style={styles.ipAddress}>{deviceIp}</Text>
@@ -190,9 +199,13 @@ export default function PrintServerScreen() {
         <Picker
           selectedValue={device}
           style={styles.picker}
-          onValueChange={(itemValue) => setDevice(itemValue)}
+          onValueChange={(itemValue) => {
+            if (itemValue !== "placeholder") {
+              setDevice(itemValue);
+            }
+          }}
         >
-          <Picker.Item label="Choose a printer" value="placeholder" enabled={false} />
+          <Picker.Item label="Choose a printer" value="placeholder" />
           {devices.map((device) => (
             <Picker.Item key={device.id} label={device.name} value={device} />
           ))}
@@ -203,6 +216,7 @@ export default function PrintServerScreen() {
       ) : (
         <Button title="Disable Print Server" color="red" onPress={stopPrintServer} />
       )}
+      <Text style={styles.footer}>© Nhat Nguyen (Nathan Pixodeo)</Text>
     </ScrollView>
   );
 }
@@ -247,5 +261,12 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: '100%',
+  },
+  footer: {
+    fontSize: 14,
+    textAlign: 'center',
+    color: '#888',
+    marginTop: 20,
+    paddingVertical: 10,
   },
 });
