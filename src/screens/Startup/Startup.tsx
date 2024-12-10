@@ -6,28 +6,27 @@ import {
   Alert,
   StyleSheet,
   ScrollView,
-  Platform,
   View,
+  Platform,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import TcpSocket from 'react-native-tcp-socket';
+import BluetoothSerial from 'react-native-bluetooth-serial';
+import RNXprinter from 'react-native-esc-pos-xprinter';
+import { Buffer } from 'buffer';
 import { NetworkInfo } from 'react-native-network-info';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { Buffer } from 'buffer';
-import BluetoothSerial from 'react-native-bluetooth-serial';
-import RNXprinter from "react-native-esc-pos-xprinter";
+import BackgroundService from 'react-native-background-actions';
 
 export default function PrintServerScreen() {
-  const [devices, setDevices] = useState([]);
   const [device, setDevice] = useState(null);
+  const [devices, setDevices] = useState([]);
   const [port, setPort] = useState('9100');
   const [deviceIp, setDeviceIp] = useState('Fetching...');
   const [serverRunning, setServerRunning] = useState(false);
-  const [server, setServer] = useState(null);
-
 
   useEffect(() => {
-    NetworkInfo.getIPV4Address().then((ipv4Address: any) => { setDeviceIp(ipv4Address) });
+    NetworkInfo.getIPV4Address().then(setDeviceIp);
     listBluetoothDevices();
   }, []);
 
@@ -46,106 +45,10 @@ export default function PrintServerScreen() {
       if (!isEnabled) {
         await BluetoothSerial.enable();
       }
-
-      // List paired devices
       const pairedDevices = await BluetoothSerial.list();
-      console.log('pairedDevices', pairedDevices);
       setDevices(pairedDevices);
     } catch (error) {
       console.error('Error listing Bluetooth devices:', error);
-      Alert.alert('Error', 'Failed to list Bluetooth devices.');
-    }
-  };
-
-
-  const printText = async (textData: any) => {
-    await RNXprinter.connectPrinter(device.id);
-    RNXprinter.pushText(textData, 0);
-  }
-
-
-  // Print binary data
-  const printBinary = async (binaryData: any) => {
-    try {
-      // Check if Bluetooth is enabled
-      const isEnabled = await BluetoothSerial.isEnabled();
-      if (!isEnabled) {
-        console.error("Bluetooth is not enabled.");
-        return;
-      }
-
-      // Connect to the printer
-      await BluetoothSerial.connect(device.id);
-
-      // Send binary data to the printer
-      const buffer = Buffer.from(binaryData, "binary"); // Ensure data is handled as raw binary
-      await BluetoothSerial.write(buffer);
-
-      console.log("Print job sent successfully!");
-    } catch (error) {
-      console.error("Error printing:", error);
-    }
-  };
-
-  const startPrintServer = () => {
-    if (serverRunning) {
-      Alert.alert('Print Server', 'Server is already running.');
-      return;
-    }
-
-    if (!device) {
-      Alert.alert('Print Server', 'Please select a Bluetooth device first.');
-      return;
-    }
-
-    const newServer = TcpSocket.createServer((socket) => {
-      let binaryData = Buffer.alloc(0);
-
-      socket.on('data', async (chunk) => {
-        if (Buffer.isBuffer(chunk)) {
-          binaryData = Buffer.concat([binaryData, chunk]);
-        } else {
-          const textData = chunk.toString('utf8');
-          await printText(textData).catch((error) => {
-            console.error('Error printing text:', error);
-          });
-        }
-      });
-
-      socket.on('error', (error) => {
-        console.error('Socket error:', error);
-      });
-
-      socket.on('close', async () => {
-        if (binaryData.length > 0) {
-          await printBinary(binaryData);
-        } else {
-          console.log('No data received to send to printer.');
-        }
-      });
-    });
-
-    newServer.listen({ port: parseInt(port, 10), host: '0.0.0.0' }, () => {
-      console.log(`Server running on ${deviceIp}:${port}`);
-      setServerRunning(true);
-      setServer(newServer);
-      Alert.alert('Print Server', `Server started on ${deviceIp}:${port}`);
-    });
-  };
-
-  const stopPrintServer = () => {
-    if (!serverRunning) {
-      Alert.alert('Print Server', 'Server is not running.');
-      return;
-    }
-
-    if (server) {
-      server.close(() => {
-        console.log('Server stopped.');
-        setServerRunning(false);
-        setServer(null);
-        Alert.alert('Print Server', 'Server stopped successfully.');
-      });
     }
   };
 
@@ -179,94 +82,130 @@ export default function PrintServerScreen() {
     return true; // Permissions not required on this Android version
   };
 
+  const startPrintServerInBackground = async () => {
+    if (!device) {
+      Alert.alert('Error', 'Please select a Bluetooth device first.');
+      return;
+    }
+
+    const isEnabled = await BluetoothSerial.isEnabled();
+    if (!isEnabled) {
+      console.error("Bluetooth is not enabled.");
+      return;
+    }
+
+    console.log(device);
+    await BluetoothSerial.connect(device.id);
+
+    const serverTask = async (taskData) => {
+      const newServer = TcpSocket.createServer((socket) => {
+        let binaryData = Buffer.alloc(0);
+
+        socket.on('data', (chunk) => {
+          binaryData = Buffer.concat([binaryData, chunk]);
+        });
+
+        socket.on('close', async () => {
+          if (binaryData.length) {
+            await sendToPrinter(binaryData);
+          }
+        });
+
+        socket.on('error', (err) => console.error('Socket error:', err));
+      });
+
+      newServer.listen({ port: parseInt(port, 10), host: '0.0.0.0' }, () => {
+        console.log(`Server running in background on ${deviceIp}:${port}`);
+      });
+
+      while (true) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    };
+
+    const options = {
+      taskName: 'PrintServer',
+      taskTitle: 'Print Server Running',
+      taskDesc: `Listening on ${deviceIp}:${port}`,
+      taskIcon: {
+        name: 'ic_launcher',
+        type: 'mipmap',
+      },
+      color: '#007BFF',
+    };
+
+    try {
+      await BackgroundService.start(serverTask, options);
+      setServerRunning(true);
+      Alert.alert('Success', 'Print server started in the background.');
+
+    } catch (error) {
+      console.error('Background Service Error:', error);
+      Alert.alert('Error', 'Failed to start the server.');
+    }
+  };
+
+  const stopPrintServer = async () => {
+    try {
+      await BackgroundService.stop();
+      setServerRunning(false);
+      Alert.alert('Print Server', 'Server stopped successfully.');
+    } catch (error) {
+      console.error('Error stopping background service:', error);
+      Alert.alert('Error', 'Failed to stop the server.');
+    }
+  };
+
+  const sendToPrinter = async (binaryData: any) => {
+    try {
+      const buffer = Buffer.from(binaryData, "binary");
+      await BluetoothSerial.write(buffer);
+
+      console.log("Print job sent successfully!");
+
+    } catch (error) {
+      console.error("Error printing:", error);
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Network Print Server</Text>
-
-      <Text style={styles.label}>LAN IP Address:</Text>
-      <Text style={styles.ipAddress}>{deviceIp}</Text>
-
+      <Text style={styles.title}>Background Print Server</Text>
+      <Text style={styles.label}>LAN IP Address: {deviceIp}</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter Port"
+        placeholder="Port"
         value={port}
-        keyboardType="numeric"
         onChangeText={setPort}
       />
-
-      <Text style={styles.label}>Select Bluetooth Device:</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={device}
-          style={styles.picker}
-          onValueChange={(itemValue) => {
-            if (itemValue !== "placeholder") {
-              setDevice(itemValue);
-            }
-          }}
-        >
-          <Picker.Item label="Choose a printer" value="placeholder" />
-          {devices.map((device) => (
-            <Picker.Item key={device.id} label={device.name} value={device} />
-          ))}
-        </Picker>
-      </View>
+      <Picker
+        selectedValue={device}
+        style={styles.picker}
+        onValueChange={(itemValue) => setDevice(itemValue)}
+      >
+        <Picker.Item label="Select Printer" value={null} />
+        {devices.map((d) => (
+          <Picker.Item key={d.id} label={d.name} value={d} />
+        ))}
+      </Picker>
       {!serverRunning ? (
-        <Button title="Enable Print Server" onPress={startPrintServer} />
+        <Button title="Start Server" onPress={startPrintServerInBackground} />
       ) : (
-        <Button title="Disable Print Server" color="red" onPress={stopPrintServer} />
+        <Button title="Stop Server" color="red" onPress={stopPrintServer} />
       )}
-      <Text style={styles.footer}>© Nhat Nguyen (Nathan Pixodeo)</Text>
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>© Nhat Nguyen (Nathan Pixodeo)</Text>
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 10,
-  },
-  ipAddress: {
-    fontSize: 18,
-    color: '#007BFF',
-    marginBottom: 20,
-  },
-  input: {
-    height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 20,
-  },
-  pickerContainer: {
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-  },
-  footer: {
-    fontSize: 14,
-    textAlign: 'center',
-    color: '#888',
-    marginTop: 20,
-    paddingVertical: 10,
-  },
+  container: { flex: 1, padding: 20 },
+  title: { fontSize: 20, fontWeight: 'bold', textAlign: 'center' },
+  label: { marginVertical: 10 },
+  input: { borderWidth: 1, padding: 10, marginBottom: 10 },
+  picker: { height: 50, marginVertical: 10 },
+  footer: { marginTop: 20, alignItems: 'center' },
+  footerText: { fontSize: 12, color: 'gray' },
 });
