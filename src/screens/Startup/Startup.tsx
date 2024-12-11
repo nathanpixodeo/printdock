@@ -8,11 +8,11 @@ import {
   ScrollView,
   View,
   Platform,
+  Linking
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import TcpSocket from 'react-native-tcp-socket';
 import BluetoothSerial from 'react-native-bluetooth-serial';
-import RNXprinter from 'react-native-esc-pos-xprinter';
 import { Buffer } from 'buffer';
 import { NetworkInfo } from 'react-native-network-info';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
@@ -30,11 +30,36 @@ export default function PrintServerScreen() {
     listBluetoothDevices();
   }, []);
 
+  const handleDeepLink = (event: any) => {
+    const { url } = event;
+    console.log('Deep Link URL:', url);
+
+    if (url === 'airprint://printserver/stop') {
+      stopPrintServer(); // Call the function to stop the print server
+    } else if (url === 'airprint://printserver/start') {
+      startPrintServerInBackground(); // Call the function to start the print server
+    }
+  };
+
+  useEffect(() => {
+    // Add event listener for deep links
+    Linking.addEventListener('url', handleDeepLink);
+
+    // Handle the case where the app is launched with a deep link
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink({ url });
+    });
+
+    return () => {
+      // Clean up the event listener
+      Linking.removeEventListener('url', handleDeepLink);
+    };
+  }, []);
+
   const listBluetoothDevices = async () => {
     try {
       // Ensure permissions are granted before proceeding
       const hasPermissions = await requestBluetoothPermissions();
-      console.log();
       if (!hasPermissions) {
         Alert.alert('Permission Denied', 'Bluetooth permissions are required to list devices.');
         return;
@@ -94,7 +119,6 @@ export default function PrintServerScreen() {
       return;
     }
 
-    console.log(device);
     await BluetoothSerial.connect(device.id);
 
     const serverTask = async (taskData) => {
@@ -118,7 +142,15 @@ export default function PrintServerScreen() {
         console.log(`Server running in background on ${deviceIp}:${port}`);
       });
 
+      // Poll for deep links
       while (true) {
+        const url = await Linking.getInitialURL();
+        if (url) {
+          if (url.includes('stop')) {
+            await BackgroundService.stop();
+            break; // Exit background task
+          }
+        }
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     };
@@ -126,12 +158,13 @@ export default function PrintServerScreen() {
     const options = {
       taskName: 'PrintServer',
       taskTitle: 'Print Server Running',
-      taskDesc: `Listening on ${deviceIp}:${port}`,
+      taskDesc: `Listening on ${deviceIp}:${port}. Touch to stop it!`,
       taskIcon: {
         name: 'ic_launcher',
         type: 'mipmap',
       },
       color: '#007BFF',
+      linkingURI: 'airprint://printserver/stop'
     };
 
     try {
@@ -148,6 +181,7 @@ export default function PrintServerScreen() {
   const stopPrintServer = async () => {
     try {
       await BackgroundService.stop();
+      await BluetoothSerial.disconnect();
       setServerRunning(false);
       Alert.alert('Print Server', 'Server stopped successfully.');
     } catch (error) {
