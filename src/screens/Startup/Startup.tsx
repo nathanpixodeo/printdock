@@ -43,7 +43,7 @@ export default function PrintServerScreen() {
 
   useEffect(() => {
     // Add event listener for deep links
-    Linking.addEventListener('url', handleDeepLink);
+    const subscription = Linking.addEventListener('url', handleDeepLink);
 
     // Handle the case where the app is launched with a deep link
     Linking.getInitialURL().then((url) => {
@@ -52,7 +52,7 @@ export default function PrintServerScreen() {
 
     return () => {
       // Clean up the event listener
-      Linking.removeEventListener('url', handleDeepLink);
+      subscription.remove();
     };
   }, []);
 
@@ -119,7 +119,15 @@ export default function PrintServerScreen() {
       return;
     }
 
-    await BluetoothSerial.connect(device.id);
+    // Attempt to connect to the selected Bluetooth device
+    try {
+      console.log(`Attempting to connect to device: ${device.name} (${device.id})`);
+      await BluetoothSerial.connect(device.id);
+      console.log('Connected to device successfully!');
+    } catch (connectError) {
+      console.error('Failed to connect to Bluetooth device:', connectError);
+      throw new Error(`Unable to connect to the device "${device.name}". Ensure the device is powered on and within range.`);
+    }
 
     const serverTask = async (taskData) => {
       const newServer = TcpSocket.createServer((socket) => {
