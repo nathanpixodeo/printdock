@@ -19,10 +19,10 @@ import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import BackgroundService from 'react-native-background-actions';
 
 export default function PrintServerScreen() {
-  const [device, setDevice] = useState(null);
-  const [devices, setDevices] = useState([]);
+  const [device, setDevice] = useState<any>(null);
+  const [devices, setDevices] = useState<any>([]);
   const [port, setPort] = useState('9100');
-  const [deviceIp, setDeviceIp] = useState('Fetching...');
+  const [deviceIp, setDeviceIp] = useState<any>('Fetching...');
   const [serverRunning, setServerRunning] = useState(false);
 
   useEffect(() => {
@@ -129,11 +129,11 @@ export default function PrintServerScreen() {
       throw new Error(`Unable to connect to the device "${device.name}". Ensure the device is powered on and within range.`);
     }
 
-    const serverTask = async (taskData) => {
+    const serverTask = async (taskData: any) => {
       const newServer = TcpSocket.createServer((socket) => {
         let binaryData = Buffer.alloc(0);
 
-        socket.on('data', (chunk) => {
+        socket.on('data', (chunk: any) => {
           binaryData = Buffer.concat([binaryData, chunk]);
         });
 
@@ -226,7 +226,7 @@ export default function PrintServerScreen() {
         onValueChange={(itemValue) => setDevice(itemValue)}
       >
         <Picker.Item label="Select Printer" value={null} />
-        {devices.map((d) => (
+        {devices.map((d: any) => (
           <Picker.Item key={d.id} label={d.name} value={d} />
         ))}
       </Picker>
