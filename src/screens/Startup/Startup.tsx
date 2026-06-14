@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Alert,
+  Linking,
   ScrollView,
   Text,
   TextInput,
@@ -25,7 +26,9 @@ import { printServerService } from '@/services/printServer';
 
 import ServerCard from '@/components/molecules/ServerCard/ServerCard';
 
-const POLL_INTERVAL = 5000;
+const IP_REFRESH_INTERVAL = 30000;
+const MIN_PORT = 1024;
+const MAX_PORT = 65535;
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -37,12 +40,14 @@ export default function HomeScreen() {
   );
   const [devices, setDevices] = useState<BluetoothDevice[]>([]);
   const [port, setPort] = useState('9100');
+  const [portError, setPortError] = useState<string | null>(null);
   const [deviceIp, setDeviceIp] = useState('Fetching...');
   const [serverRunning, setServerRunning] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isScanning, setIsScanning] = useState(false);
   const [isToggling, setIsToggling] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const isMountedRef = useRef(true);
 
   const buttonScale = useSharedValue(1);
   const contentOpacity = useSharedValue(0);
@@ -80,15 +85,68 @@ export default function HomeScreen() {
       });
   }, []);
 
+  // Deep link handler
+  const handleDeepLink = useCallback(
+    async (url: string | null) => {
+      if (!url) {
+        return;
+      }
+
+      if (url.includes('printserver/stop')) {
+        try {
+          await printServerService.stop();
+        } catch {
+          // already stopped
+        }
+      } else if (url.includes('printserver/start') && selectedDevice) {
+        try {
+          await printServerService.start(
+            selectedDevice,
+            Number.parseInt(port, 10) || 9100,
+            deviceIp,
+          );
+        } catch {
+          // silently fail for deep links
+        }
+      }
+    },
+    [selectedDevice, port, deviceIp],
+  );
+
+  // Deep link listener
+  useEffect(() => {
+    const subscription = Linking.addEventListener('url', (event) => {
+      handleDeepLink(event.url);
+    });
+
+    Linking.getInitialURL().then(handleDeepLink);
+
+    return () => {
+      subscription.remove();
+    };
+  }, [handleDeepLink]);
+
+  // Port validation
+  const validatePort = useCallback((value: string) => {
+    setPort(value);
+    const num = Number.parseInt(value, 10);
+    if (value.length > 0 && (Number.isNaN(num) || num < MIN_PORT || num > MAX_PORT)) {
+      setPortError(`Port must be between ${MIN_PORT} and ${MAX_PORT}`);
+    } else {
+      setPortError(null);
+    }
+  }, []);
+
   useEffect(() => {
     refreshIp();
     fetchDeviceList();
 
     pollRef.current = setInterval(() => {
       refreshIp();
-    }, POLL_INTERVAL);
+    }, IP_REFRESH_INTERVAL);
 
     return () => {
+      isMountedRef.current = false;
       if (pollRef.current) {
         clearInterval(pollRef.current);
       }
@@ -136,6 +194,12 @@ export default function HomeScreen() {
       return;
     }
 
+    const portNumber = Number.parseInt(port, 10);
+    if (Number.isNaN(portNumber) || portNumber < MIN_PORT || portNumber > MAX_PORT) {
+      Alert.alert('Error', `Port must be between ${MIN_PORT} and ${MAX_PORT}`);
+      return;
+    }
+
     buttonScale.value = withSpring(0.95, undefined, () => {
       buttonScale.value = withSpring(1);
     });
@@ -144,7 +208,7 @@ export default function HomeScreen() {
     try {
       await printServerService.start(
         selectedDevice,
-        Number.parseInt(port, 10) || 9100,
+        portNumber,
         deviceIp,
       );
       Alert.alert('Success', t('airprint:print_server.server_started'));

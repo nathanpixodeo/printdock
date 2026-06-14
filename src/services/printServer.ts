@@ -92,41 +92,48 @@ class PrintServerService {
     await BluetoothSerial.connect(device.id);
 
     const serverTask = async () => {
-      this.server = TcpSocket.createServer((socket) => {
-        let binaryData = Buffer.alloc(0);
+      return new Promise<void>((resolve) => {
+        this.server = TcpSocket.createServer((socket) => {
+          let binaryData = Buffer.alloc(0);
 
-        socket.on('data', (chunk: Buffer) => {
-          binaryData = Buffer.concat([binaryData, chunk]);
-        });
+          socket.on('data', (chunk: Buffer) => {
+            binaryData = Buffer.concat([binaryData, chunk]);
+          });
 
-        socket.on('close', async () => {
-          if (binaryData.length > 0) {
-            try {
-              await BluetoothSerial.write(binaryData);
-              this.listener?.onPrintJobSent();
-            } catch (error) {
-              const message =
-                error instanceof Error ? error.message : String(error);
-              this.listener?.onError(`Print error: ${message}`);
+          socket.on('close', async () => {
+            if (binaryData.length > 0) {
+              try {
+                await BluetoothSerial.write(binaryData);
+                this.listener?.onPrintJobSent();
+              } catch (error) {
+                const message =
+                  error instanceof Error ? error.message : String(error);
+                this.listener?.onError(`Print error: ${message}`);
+              }
             }
+          });
+
+          socket.on('error', () => {
+            // socket errors are expected when clients disconnect abruptly
+          });
+        });
+
+        this.server.listen({ port, host: '0.0.0.0' }, () => {
+          this.isRunning = true;
+          this.listener?.onStatusChange(true);
+          // server is listening, but we don't resolve - keep alive
+        });
+
+        // keep alive polling - resolves only when stop() is called
+        const poll = setInterval(() => {
+          if (!this.isRunning) {
+            clearInterval(poll);
+            this.server?.close();
+            this.server = null;
+            resolve();
           }
-        });
-
-        socket.on('error', () => {
-          // socket errors are expected when clients disconnect abruptly
-        });
+        }, 1000);
       });
-
-      this.server.listen({ port, host: '0.0.0.0' }, () => {
-        this.isRunning = true;
-        this.listener?.onStatusChange(true);
-      });
-
-      // keep the background task alive until explicitly stopped
-      // eslint-disable-next-line no-unreachable-loop, no-constant-binary-expression
-      while (this.isRunning) {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      }
     };
 
     const options = {
@@ -146,6 +153,8 @@ class PrintServerService {
   }
 
   async stop(): Promise<void> {
+    this.isRunning = false;
+
     try {
       await BackgroundService.stop();
     } catch {
@@ -163,7 +172,6 @@ class PrintServerService {
       // may already be disconnected
     }
 
-    this.isRunning = false;
     this.listener?.onStatusChange(false);
   }
 }
