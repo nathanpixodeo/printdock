@@ -1,26 +1,26 @@
 {
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
-    "types": ["jest", "node"],
     "paths": {
       "@/*": ["./src/*"]
     },
-    "allowImportingTsExtensions": false,
     "module": "esnext",
     "skipLibCheck": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": [
     "__mocks__/**/*",
     "./src/**/*",
     "index.d.ts",
-    ".eslint.config.js",
+    "index.js",
     "jest.setup.js",
     "jest.config.js",
     "babel.config.js",
-    "index.js",
-    "react-native.config.js",
-    "jest.setup.ts"
+    "eslint.config.mjs",
+    "metro.config.js",
+    ".prettierrc.js"
   ],
-  "exclude": ["node_modules", "_", "android", "ios"]
+  "exclude": ["node_modules", "android", "ios"]
 }

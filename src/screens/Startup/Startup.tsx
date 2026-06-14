@@ -1,253 +1,358 @@
-import React, { useState, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Alert,
+  ScrollView,
   Text,
   TextInput,
-  Button,
-  Alert,
-  StyleSheet,
-  ScrollView,
+  TouchableOpacity,
   View,
-  Platform,
-  Linking
+  ActivityIndicator,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import TcpSocket from 'react-native-tcp-socket';
-import BluetoothSerial from 'react-native-bluetooth-serial';
-import { Buffer } from 'buffer';
+import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { NetworkInfo } from 'react-native-network-info';
-import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import BackgroundService from 'react-native-background-actions';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
-export default function PrintServerScreen() {
-  const [device, setDevice] = useState<any>(null);
-  const [devices, setDevices] = useState<any>([]);
+import { useTheme } from '@/theme';
+import type { BluetoothDevice } from '@/services/printServer';
+import { printServerService } from '@/services/printServer';
+
+import ServerCard from '@/components/molecules/ServerCard/ServerCard';
+
+const POLL_INTERVAL = 5000;
+
+export default function HomeScreen() {
+  const { t } = useTranslation();
+  const { backgrounds, borders, fonts, gutters, layout } = useTheme();
+  const navigation = useNavigation();
+
+  const [selectedDevice, setSelectedDevice] = useState<BluetoothDevice | null>(
+    null,
+  );
+  const [devices, setDevices] = useState<BluetoothDevice[]>([]);
   const [port, setPort] = useState('9100');
-  const [deviceIp, setDeviceIp] = useState<any>('Fetching...');
+  const [deviceIp, setDeviceIp] = useState('Fetching...');
   const [serverRunning, setServerRunning] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isScanning, setIsScanning] = useState(false);
+  const [isToggling, setIsToggling] = useState(false);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const buttonScale = useSharedValue(1);
+  const contentOpacity = useSharedValue(0);
 
   useEffect(() => {
-    NetworkInfo.getIPV4Address().then(setDeviceIp);
-    listBluetoothDevices();
+    contentOpacity.value = withTiming(1, { duration: 400 });
+  }, [contentOpacity]);
+
+  const animatedContent = useAnimatedStyle(() => ({
+    opacity: contentOpacity.value,
+  }));
+
+  const animatedButton = useAnimatedStyle(() => ({
+    transform: [{ scale: buttonScale.value }],
+  }));
+
+  const fetchDeviceList = useCallback(async () => {
+    try {
+      const paired = await printServerService.listDevices();
+      setDevices(paired);
+    } catch {
+      // silently retry on next poll
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const handleDeepLink = (event: any) => {
-    const { url } = event;
-    console.log('Deep Link URL:', url);
-
-    if (url === 'airprint://printserver/stop') {
-      stopPrintServer(); // Call the function to stop the print server
-    } else if (url === 'airprint://printserver/start') {
-      startPrintServerInBackground(); // Call the function to start the print server
-    }
-  };
+  const refreshIp = useCallback(() => {
+    NetworkInfo.getIPV4Address()
+      .then((ip: string) => {
+        setDeviceIp(ip);
+      })
+      .catch(() => {
+        setDeviceIp('Unavailable');
+      });
+  }, []);
 
   useEffect(() => {
-    // Add event listener for deep links
-    const subscription = Linking.addEventListener('url', handleDeepLink);
+    refreshIp();
+    fetchDeviceList();
 
-    // Handle the case where the app is launched with a deep link
-    Linking.getInitialURL().then((url) => {
-      if (url) handleDeepLink({ url });
+    pollRef.current = setInterval(() => {
+      refreshIp();
+    }, POLL_INTERVAL);
+
+    return () => {
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+      }
+    };
+  }, [fetchDeviceList, refreshIp]);
+
+  useEffect(() => {
+    printServerService.setListener({
+      onStatusChange: (running) => {
+        setServerRunning(running);
+        setIsToggling(false);
+      },
+      onError: (error) => {
+        setIsToggling(false);
+        Alert.alert('Error', error);
+      },
+      onPrintJobSent: () => {
+        // could show a brief toast notification
+      },
     });
 
     return () => {
-      // Clean up the event listener
-      subscription.remove();
+      printServerService.removeListener();
     };
   }, []);
 
-  const listBluetoothDevices = async () => {
+  const handleScan = useCallback(async () => {
+    setIsScanning(true);
     try {
-      // Ensure permissions are granted before proceeding
-      const hasPermissions = await requestBluetoothPermissions();
-      if (!hasPermissions) {
-        Alert.alert('Permission Denied', 'Bluetooth permissions are required to list devices.');
-        return;
-      }
-
-      // Check if Bluetooth is enabled
-      const isEnabled = await BluetoothSerial.isEnabled();
-      if (!isEnabled) {
-        await BluetoothSerial.enable();
-      }
-      const pairedDevices = await BluetoothSerial.list();
-      setDevices(pairedDevices);
-    } catch (error) {
-      console.error('Error listing Bluetooth devices:', error);
+      const paired = await printServerService.listDevices();
+      setDevices(paired);
+    } catch {
+      Alert.alert(
+        t('airprint:print_server.permission_denied'),
+        t('airprint:print_server.permission_required'),
+      );
+    } finally {
+      setIsScanning(false);
     }
-  };
+  }, [t]);
 
-  const requestBluetoothPermissions = async () => {
-    if (Platform.OS === 'android' && Platform.Version >= 31) {
-      try {
-        // Check and request BLUETOOTH_SCAN permission
-        const scanPermission = await check(PERMISSIONS.ANDROID.BLUETOOTH_SCAN);
-        if (scanPermission !== RESULTS.GRANTED) {
-          const scanRequest = await request(PERMISSIONS.ANDROID.BLUETOOTH_SCAN);
-          if (scanRequest !== RESULTS.GRANTED) {
-            return false; // Permission not granted
-          }
-        }
-
-        // Check and request BLUETOOTH_CONNECT permission
-        const connectPermission = await check(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
-        if (connectPermission !== RESULTS.GRANTED) {
-          const connectRequest = await request(PERMISSIONS.ANDROID.BLUETOOTH_CONNECT);
-          if (connectRequest !== RESULTS.GRANTED) {
-            return false; // Permission not granted
-          }
-        }
-
-        return true; // Permissions granted
-      } catch (error) {
-        console.error('Permission error:', error);
-        return false; // Error in permissions check
-      }
-    }
-    return true; // Permissions not required on this Android version
-  };
-
-  const startPrintServerInBackground = async () => {
-    if (!device) {
-      Alert.alert('Error', 'Please select a Bluetooth device first.');
+  const handleStart = useCallback(async () => {
+    if (!selectedDevice) {
+      Alert.alert('Error', t('airprint:print_server.please_select_device'));
       return;
     }
 
-    const isEnabled = await BluetoothSerial.isEnabled();
-    if (!isEnabled) {
-      console.error("Bluetooth is not enabled.");
-      return;
-    }
+    buttonScale.value = withSpring(0.95, undefined, () => {
+      buttonScale.value = withSpring(1);
+    });
 
-    // Attempt to connect to the selected Bluetooth device
+    setIsToggling(true);
     try {
-      console.log(`Attempting to connect to device: ${device.name} (${device.id})`);
-      await BluetoothSerial.connect(device.id);
-      console.log('Connected to device successfully!');
-    } catch (connectError) {
-      console.error('Failed to connect to Bluetooth device:', connectError);
-      throw new Error(`Unable to connect to the device "${device.name}". Ensure the device is powered on and within range.`);
-    }
-
-    const serverTask = async (taskData: any) => {
-      const newServer = TcpSocket.createServer((socket) => {
-        let binaryData = Buffer.alloc(0);
-
-        socket.on('data', (chunk: any) => {
-          binaryData = Buffer.concat([binaryData, chunk]);
-        });
-
-        socket.on('close', async () => {
-          if (binaryData.length) {
-            await sendToPrinter(binaryData);
-          }
-        });
-
-        socket.on('error', (err) => console.error('Socket error:', err));
-      });
-
-      newServer.listen({ port: parseInt(port, 10), host: '0.0.0.0' }, () => {
-        console.log(`Server running in background on ${deviceIp}:${port}`);
-      });
-
-      // Poll for deep links
-      while (true) {
-        const url = await Linking.getInitialURL();
-        if (url) {
-          if (url.includes('stop')) {
-            await BackgroundService.stop();
-            break; // Exit background task
-          }
-        }
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
-    };
-
-    const options = {
-      taskName: 'PrintServer',
-      taskTitle: 'Print Server Running',
-      taskDesc: `Listening on ${deviceIp}:${port}. Touch to stop it!`,
-      taskIcon: {
-        name: 'ic_launcher',
-        type: 'mipmap',
-      },
-      color: '#007BFF',
-      linkingURI: 'airprint://printserver/stop'
-    };
-
-    try {
-      await BackgroundService.start(serverTask, options);
-      setServerRunning(true);
-      Alert.alert('Success', 'Print server started in the background.');
-
+      await printServerService.start(
+        selectedDevice,
+        Number.parseInt(port, 10) || 9100,
+        deviceIp,
+      );
+      Alert.alert('Success', t('airprint:print_server.server_started'));
     } catch (error) {
-      console.error('Background Service Error:', error);
-      Alert.alert('Error', 'Failed to start the server.');
+      setIsToggling(false);
+      const message = error instanceof Error ? error.message : String(error);
+      Alert.alert('Error', message);
     }
-  };
+  }, [selectedDevice, port, deviceIp, t, buttonScale]);
 
-  const stopPrintServer = async () => {
+  const handleStop = useCallback(async () => {
+    buttonScale.value = withSpring(0.95, undefined, () => {
+      buttonScale.value = withSpring(1);
+    });
+
+    setIsToggling(true);
     try {
-      await BackgroundService.stop();
-      await BluetoothSerial.disconnect();
-      setServerRunning(false);
-      Alert.alert('Print Server', 'Server stopped successfully.');
-    } catch (error) {
-      console.error('Error stopping background service:', error);
-      Alert.alert('Error', 'Failed to stop the server.');
+      await printServerService.stop();
+      Alert.alert('Success', t('airprint:print_server.server_stopped'));
+    } catch {
+      setIsToggling(false);
+      Alert.alert('Error', t('airprint:print_server.failed_to_stop'));
     }
-  };
+  }, [t, buttonScale]);
 
-  const sendToPrinter = async (binaryData: any) => {
-    try {
-      const buffer = Buffer.from(binaryData, "binary");
-      await BluetoothSerial.write(buffer);
+  const handleSettings = useCallback(() => {
+    navigation.navigate('Settings');
+  }, [navigation]);
 
-      console.log("Print job sent successfully!");
-
-    } catch (error) {
-      console.error("Error printing:", error);
-    }
-  };
+  if (isLoading) {
+    return (
+      <View style={[layout.flex_1, layout.justifyCenter, layout.itemsCenter]}>
+        <ActivityIndicator size="large" color="#44427D" />
+      </View>
+    );
+  }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Background Print Server</Text>
-      <Text style={styles.label}>LAN IP Address: {deviceIp}</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Port"
-        value={port}
-        onChangeText={setPort}
-      />
-      <Picker
-        selectedValue={device}
-        style={styles.picker}
-        onValueChange={(itemValue) => setDevice(itemValue)}
+    <View style={[layout.flex_1, backgrounds.gray50]}>
+      {/* Header */}
+      <View
+        style={[
+          gutters.paddingHorizontal_24,
+          gutters.paddingTop_16,
+          gutters.paddingBottom_12,
+          layout.row,
+          layout.justifyBetween,
+          layout.itemsCenter,
+        ]}
       >
-        <Picker.Item label="Select Printer" value={null} />
-        {devices.map((d: any) => (
-          <Picker.Item key={d.id} label={d.name} value={d} />
-        ))}
-      </Picker>
-      {!serverRunning ? (
-        <Button title="Start Server" onPress={startPrintServerInBackground} />
-      ) : (
-        <Button title="Stop Server" color="red" onPress={stopPrintServer} />
-      )}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>© Nhat Nguyen (Nathan Pixodeo)</Text>
+        <View>
+          <Text style={[fonts.size_24, fonts.purple500, fonts.bold]}>
+            AirPrint
+          </Text>
+          <Text style={[fonts.size_12, fonts.gray400]}>
+            {t('airprint:print_server.subtitle')}
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPress={handleSettings}
+          style={[
+            gutters.padding_8,
+            backgrounds.purple100,
+            borders.rounded_8,
+          ]}
+        >
+          <Text style={[fonts.size_20]}>⚙️</Text>
+        </TouchableOpacity>
       </View>
-    </ScrollView>
+
+      <ScrollView
+        contentContainerStyle={[gutters.padding_24]}
+        showsVerticalScrollIndicator={false}
+      >
+        <Animated.View style={animatedContent}>
+          {/* Server Status Card */}
+          <ServerCard
+            isRunning={serverRunning}
+            ipAddress={deviceIp}
+            port={port}
+            deviceName={selectedDevice?.name ?? null}
+          />
+
+          {/* Configuration Section */}
+          <View style={[gutters.marginTop_24]}>
+            <Text style={[fonts.size_18, fonts.gray800, fonts.bold, gutters.marginBottom_16]}>
+              Configuration
+            </Text>
+
+            {/* Port Input */}
+            <View style={[gutters.marginBottom_16]}>
+              <Text style={[fonts.size_14, fonts.gray400, gutters.marginBottom_4]}>
+                {t('airprint:print_server.port_label')}
+              </Text>
+              <TextInput
+                keyboardType="number-pad"
+                placeholder={t('airprint:print_server.port_placeholder')}
+                placeholderTextColor="#9CA3AF"
+                style={[
+                  gutters.paddingHorizontal_16,
+                  gutters.paddingVertical_12,
+                  borders.rounded_12,
+                  borders.w_1,
+                  borders.gray200,
+                  backgrounds.white,
+                  fonts.size_16,
+                  fonts.gray800,
+                  { borderColor: '#D1D5DB' },
+                ]}
+                value={port}
+                onChangeText={setPort}
+                editable={!serverRunning}
+              />
+            </View>
+
+            {/* Device Picker */}
+            <View style={[gutters.marginBottom_16]}>
+              <View style={[layout.row, layout.justifyBetween, layout.itemsCenter, gutters.marginBottom_4]}>
+                <Text style={[fonts.size_14, fonts.gray400]}>
+                  {t('airprint:print_server.device_label')}
+                </Text>
+                <TouchableOpacity
+                  onPress={handleScan}
+                  disabled={isScanning}
+                  style={[layout.row, layout.itemsCenter]}
+                >
+                  {isScanning ? (
+                    <ActivityIndicator size="small" color="#44427D" />
+                  ) : (
+                    <Text style={[fonts.size_12, fonts.purple500]}>
+                      {t('airprint:print_server.scan')}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+              <View
+                style={[
+                  borders.rounded_12,
+                  borders.w_1,
+                  backgrounds.white,
+                  { borderColor: '#D1D5DB', overflow: 'hidden' },
+                ]}
+              >
+                <Picker
+                  selectedValue={selectedDevice}
+                  onValueChange={(item: BluetoothDevice | null) =>
+                    setSelectedDevice(item)
+                  }
+                  enabled={!serverRunning}
+                >
+                  <Picker.Item
+                    label={t('airprint:print_server.select_printer')}
+                    value={null}
+                    color="#9CA3AF"
+                  />
+                  {devices.map((device) => (
+                    <Picker.Item
+                      key={device.id}
+                      label={device.name}
+                      value={device}
+                    />
+                  ))}
+                </Picker>
+              </View>
+            </View>
+          </View>
+
+          {/* Control Button */}
+          <Animated.View style={[gutters.marginTop_8, animatedButton]}>
+            <TouchableOpacity
+              onPress={serverRunning ? handleStop : handleStart}
+              disabled={isToggling}
+              activeOpacity={0.8}
+              style={[
+                gutters.paddingVertical_16,
+                borders.rounded_16,
+                {
+                  backgroundColor: serverRunning ? '#EF4444' : '#44427D',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  shadowColor: serverRunning ? '#EF4444' : '#44427D',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 6,
+                },
+              ]}
+            >
+              {isToggling ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={[fonts.size_18, fonts.white, fonts.bold]}>
+                  {serverRunning
+                    ? t('airprint:print_server.stop_server')
+                    : t('airprint:print_server.start_server')}
+                </Text>
+              )}
+            </TouchableOpacity>
+          </Animated.View>
+
+          {/* Footer */}
+          <View style={[layout.itemsCenter, gutters.marginTop_32]}>
+            <Text style={[fonts.size_12, fonts.gray200]}>
+              {t('airprint:print_server.footer')}
+            </Text>
+          </View>
+        </Animated.View>
+      </ScrollView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 20, fontWeight: 'bold', textAlign: 'center' },
-  label: { marginVertical: 10 },
-  input: { borderWidth: 1, padding: 10, marginBottom: 10 },
-  picker: { height: 50, marginVertical: 10 },
-  footer: { marginTop: 20, alignItems: 'center' },
-  footerText: { fontSize: 12, color: 'gray' },
-});

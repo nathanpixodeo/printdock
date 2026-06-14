@@ -1,8 +1,7 @@
-import type { ReactElement } from 'react';
+import type { FC } from 'react';
 import type { SvgProps } from 'react-native-svg';
 
-import { useCallback, useEffect, useState } from 'react';
-import { z } from 'zod';
+import { useEffect, useState } from 'react';
 
 import { useTheme } from '@/theme';
 import getAssetsContext from '@/theme/assets/getAssetsContext';
@@ -14,61 +13,47 @@ type Props = SvgProps & {
 const icons = getAssetsContext('icons');
 const EXTENSION = 'svg';
 
-function IconByVariant({ path, width = 24, height = 24, ...props }: Props) {
-  const [icon, setIcon] = useState<ReactElement<SvgProps>>();
+function IconByVariant({
+  path,
+  width = 24,
+  height = 24,
+  ...props
+}: Props) {
+  const [IconComponent, setIconComponent] = useState<FC<SvgProps> | null>(
+    null,
+  );
   const { variant } = useTheme();
 
   useEffect(() => {
-    try {
-      const defaultSource = z
-        .object({ default: z.custom<ReactElement<SvgProps>>() })
-        .parse(icons(`./${path}.${EXTENSION}`));
+    const loadIcon = () => {
+      const module = icons(
+        `./${path}.${EXTENSION}`,
+      ) as { default: FC<SvgProps> };
+      const defaultIcon = module.default;
 
       if (variant === 'default') {
-        setIcon(defaultSource.default);
+        setIconComponent(() => defaultIcon);
         return;
       }
 
       try {
-        const fetchedModule = z
-          .object({ default: z.custom<ReactElement<SvgProps>>() })
-          .parse(icons(`./${variant}/${path}.${EXTENSION}`));
-
-        setIcon(fetchedModule.default);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error(
-          `Couldn't load the icon: ${path}.${EXTENSION} for the variant ${variant}, Fallback to default`,
-          error,
-        );
-        setIcon(defaultSource.default);
+        const variantModule = icons(
+          `./${variant}/${path}.${EXTENSION}`,
+        ) as { default: FC<SvgProps> };
+        setIconComponent(() => variantModule.default);
+      } catch {
+        setIconComponent(() => defaultIcon);
       }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(`Couldn't load the icon: ${path}.${EXTENSION}`, error);
-    }
+    };
+
+    loadIcon();
   }, [variant, path]);
 
-  const Component = useCallback(
-    (currentProps: SvgProps) => {
-      if (!icon) {
-        return null;
-      }
+  if (!IconComponent) {
+    return null;
+  }
 
-      return {
-        ...icon,
-        props: {
-          ...icon.props,
-          height,
-          width,
-          ...currentProps,
-        },
-      };
-    },
-    [icon, width, height],
-  );
-
-  return <Component {...props} />;
+  return <IconComponent height={height} width={width} {...props} />;
 }
 
 export default IconByVariant;

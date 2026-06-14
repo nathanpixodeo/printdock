@@ -33,7 +33,6 @@ describe('ThemeProvider', () => {
     );
     const themeContext = getByTestId('theme-variant');
 
-    // Assert that the theme context is initialized with 'default'
     expect(themeContext.children[0]).toBe('default');
   });
 
@@ -47,7 +46,6 @@ describe('ThemeProvider', () => {
     );
     const themeContext = getByTestId('theme-variant');
 
-    // Assert that the theme context is initialized with 'dark'
     expect(themeContext.children[0]).toBe('dark');
   });
 
@@ -61,10 +59,8 @@ describe('ThemeProvider', () => {
 
     expect(themeContext.children[0]).toBe('default');
 
-    // Change the theme to 'light'
     fireEvent.press(getByTestId('change-btn'));
 
-    // Assert that the theme has changed to 'light'
     expect(themeContext.children[0]).toBe('dark');
   });
 });

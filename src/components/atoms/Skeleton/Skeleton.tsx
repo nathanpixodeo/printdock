@@ -1,6 +1,6 @@
 import type { DimensionValue, ViewProps } from 'react-native';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -19,6 +19,7 @@ type Props = ViewProps & {
 
 const FROM = 0.2;
 const TO = 1;
+const DURATION = 800;
 
 function SkeletonLoader({
   children,
@@ -28,18 +29,22 @@ function SkeletonLoader({
   ...props
 }: Props) {
   const { backgrounds, borders } = useTheme();
-
   const opacity = useSharedValue(FROM);
+  const isAnimating = useRef(false);
 
   const animatedStyles = useAnimatedStyle(() => ({
     opacity: opacity.value,
   }));
 
   useEffect(() => {
-    if (!loading) {
-      return;
+    if (loading && !isAnimating.current) {
+      isAnimating.current = true;
+      opacity.value = withRepeat(withTiming(TO, { duration: DURATION }), -1, true);
     }
-    opacity.value = withRepeat(withTiming(TO, { duration: 800 }), -1, true);
+
+    if (!loading) {
+      isAnimating.current = false;
+    }
   }, [loading, opacity]);
 
   return (
@@ -53,10 +58,7 @@ function SkeletonLoader({
             animatedStyles,
             backgrounds.skeleton,
             borders.rounded_4,
-            {
-              height,
-              width,
-            },
+            { height, width },
             props.style,
           ]}
           testID="skeleton-loader"

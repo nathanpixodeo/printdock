@@ -1,1 +1,1 @@
-export { useUser } from './user/useUser';
+export { useFetchOneUser, useInvalidateUser } from './user/useUser';

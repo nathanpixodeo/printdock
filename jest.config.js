@@ -9,9 +9,9 @@ module.exports = {
     'node_modules/(?!(jest-)?react-native|@react-native|@react-native-community|@react-navigation|ky)',
   ],
   collectCoverageFrom: [
-    '<rootDir>/src/Components/**/*.{jsx, tsx}',
-    '<rootDir>/src/App.{jsx, tsx}',
+    '<rootDir>/src/Components/**/*.{jsx,tsx}',
+    '<rootDir>/src/App.{ts,tsx}',
   ],
   coverageReporters: ['html', 'text', 'text-summary', 'cobertura'],
-  testMatch: ['**/*.test.ts?(x)', '**/*.test.js?(x)'],
+  testMatch: ['**/*.test.{ts,tsx,js,jsx}'],
 };

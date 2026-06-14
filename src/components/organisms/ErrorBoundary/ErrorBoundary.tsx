@@ -1,6 +1,7 @@
 import type { ErrorInfo } from 'react';
 import type { ErrorBoundaryPropsWithFallback } from 'react-error-boundary';
 
+import { useCallback } from 'react';
 import { ErrorBoundary as DefaultErrorBoundary } from 'react-error-boundary';
 
 import { DefaultError } from '@/components/molecules';
@@ -12,20 +13,22 @@ type Props = Optional<ErrorBoundaryPropsWithFallback, 'fallback'> & {
 };
 
 function ErrorBoundary({
-  fallback = undefined,
-  onReset = undefined,
+  fallback,
+  onReset,
   onError,
   ...props
 }: Props) {
-  const onErrorReport = (error: Error, info: ErrorInfo) => {
-    // use any crash reporting tool here
-    return onError?.(error, info);
-  };
+  const onErrorReport = useCallback(
+    (error: Error, info: ErrorInfo) => {
+      onError?.(error, info);
+    },
+    [onError],
+  );
 
   return (
     <DefaultErrorBoundary
       {...props}
-      fallback={fallback || <DefaultError onReset={onReset} />}
+      fallback={fallback ?? <DefaultError onReset={onReset} />}
       onError={onErrorReport}
     />
   );

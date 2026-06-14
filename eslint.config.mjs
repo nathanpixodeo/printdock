@@ -25,8 +25,6 @@ export default [
       jest,
     },
     rules: {
-      'import/no-unresolved': 0, // handled by TypeScript
-      'unicorn/prefer-top-level-await': 0, // not valid on RN for the moment
       curly: 2,
       // `import/default`, `import/namespace` and `import/no-duplicates` are slow.
       'import/default': 0,
@@ -35,18 +33,19 @@ export default [
       'import/no-duplicates': 0,
       'import/no-extraneous-dependencies': 2,
       'import/no-named-as-default-member': 0,
+      'import/no-unresolved': 0, // handled by TypeScript
       'import/order': 0,
       'no-const-assign': 2,
       'no-constant-binary-expression': 2,
+      'no-console': 2,
       'no-extra-parens': [2, 'functions'],
       'no-irregular-whitespace': 2,
       'no-this-before-super': 2,
       'no-unused-expressions': 2,
       'no-unused-labels': 2,
-      'no-unused-vars': 0,
+      'no-unused-vars': 0, // handled by @typescript-eslint
       'no-useless-rename': 2,
       'no-var': 2,
-      'no-console': 2,
       'no-warning-comments': [2, { terms: ['@nocommit'] }],
       'object-curly-spacing': 0,
       'object-shorthand': 2,
@@ -54,15 +53,8 @@ export default [
       'prefer-const': 2,
       'react-hooks/exhaustive-deps': 2,
       'react/jsx-sort-props': 2,
-      'react/prop-types': 2,
+      'react/prop-types': 0, // handled by TypeScript
       'react/react-in-jsx-scope': 0,
-      'react/require-default-props': [
-        2,
-        {
-          forbidDefaultForRequired: true,
-          functions: 'defaultArguments',
-        },
-      ],
       'unicorn/better-regex': 2,
       'unicorn/catch-error-name': 2,
       'unicorn/consistent-empty-array-spread': 2,
@@ -92,8 +84,18 @@ export default [
       'unicorn/prefer-string-slice': 2,
       'unicorn/prefer-structured-clone': 2,
       'unicorn/prefer-ternary': 2,
+      'unicorn/prefer-top-level-await': 0, // not valid in RN
       'unicorn/text-encoding-identifier-case': 2,
-      'unused-imports/no-unused-imports': 0,
+      'unused-imports/no-unused-imports': 2,
+      'unused-imports/no-unused-vars': [
+        2,
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+        },
+      ],
     },
     settings: {
       react: {
@@ -117,17 +119,14 @@ export default [
       'typescript-sort-keys': typescriptSortKeys,
     },
     rules: {
-      'import/no-unresolved': 0, // handled by TypeScript
-      '@typescript-eslint/consistent-type-imports': 2,
       '@typescript-eslint/ban-ts-comment': 0,
+      '@typescript-eslint/consistent-type-imports': 2,
       '@typescript-eslint/no-dynamic-delete': 0,
       '@typescript-eslint/no-invalid-void-type': 0,
       '@typescript-eslint/no-namespace': 0,
       '@typescript-eslint/no-non-null-assertion': 0,
-      '@typescript-eslint/no-this-alias': 0,
-      '@typescript-eslint/no-unused-vars': 0,
+      '@typescript-eslint/no-unused-vars': 0, // handled by unused-imports plugin
       '@typescript-eslint/no-var-requires': 0,
-      'react/prop-types': 0,
       'typescript-sort-keys/interface': 2,
       'typescript-sort-keys/string-enum': 2,
     },

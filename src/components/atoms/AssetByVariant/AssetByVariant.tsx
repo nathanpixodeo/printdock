@@ -2,7 +2,6 @@ import type { ImageProps, ImageSourcePropType } from 'react-native';
 
 import { useEffect, useState } from 'react';
 import { Image } from 'react-native';
-import { z } from 'zod';
 
 import { useTheme } from '@/theme';
 import getAssetsContext from '@/theme/assets/getAssetsContext';
@@ -19,10 +18,8 @@ function AssetByVariant({ path, extension = 'png', ...props }: Props) {
   const { variant } = useTheme();
 
   useEffect(() => {
-    try {
-      const defaultSource = z
-        .custom<ImageSourcePropType>()
-        .parse(images(`./${path}.${extension}`));
+    const loadImage = () => {
+      const defaultSource = images(`./${path}.${extension}`) as ImageSourcePropType;
 
       if (variant === 'default') {
         setImage(defaultSource);
@@ -30,25 +27,23 @@ function AssetByVariant({ path, extension = 'png', ...props }: Props) {
       }
 
       try {
-        const fetchedModule = z
-          .custom<ImageSourcePropType>()
-          .parse(images(`./${variant}/${path}.${extension}`));
-        setImage(fetchedModule);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error(
-          `Couldn't load the image: ${path}.${extension} for the variant ${variant}, Fallback to default`,
-          error,
-        );
+        const variantSource = images(
+          `./${variant}/${path}.${extension}`,
+        ) as ImageSourcePropType;
+        setImage(variantSource);
+      } catch {
         setImage(defaultSource);
       }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(`Couldn't load the image: ${path}`, error);
-    }
+    };
+
+    loadImage();
   }, [variant, extension, path]);
 
-  return image && <Image source={image} testID="variant-image" {...props} />;
+  if (!image) {
+    return null;
+  }
+
+  return <Image source={image} testID="variant-image" {...props} />;
 }
 
 export default AssetByVariant;
