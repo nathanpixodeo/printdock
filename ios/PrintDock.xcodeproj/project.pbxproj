@@ -7,12 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00E356F31AD99517003FC87E /* AirPrintTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* AirPrintTests.m */; };
+		00E356F31AD99517003FC87E /* PrintDockTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* PrintDockTests.m */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		6A8B8815E2DB418E7A9ADB40 /* libPods-AirPrint.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41F925D6E74036F703711B79 /* libPods-AirPrint.a */; };
-		7082F40EB17F3004BEB57E53 /* libPods-AirPrint-AirPrintTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F569F51895253125097E7A3 /* libPods-AirPrint-AirPrintTests.a */; };
+		6A8B8815E2DB418E7A9ADB40 /* libPods-PrintDock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41F925D6E74036F703711B79 /* libPods-PrintDock.a */; };
+		7082F40EB17F3004BEB57E53 /* libPods-PrintDock-PrintDockTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F569F51895253125097E7A3 /* libPods-PrintDock-PrintDockTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		F571B3882BD7A3F80014213C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F571B3872BD7A3F80014213C /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
@@ -23,27 +23,27 @@
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
-			remoteInfo = AirPrint;
+			remoteInfo = PrintDock;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		00E356EE1AD99517003FC87E /* AirPrintTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AirPrintTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		00E356EE1AD99517003FC87E /* PrintDockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrintDockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		00E356F21AD99517003FC87E /* AirPrintTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AirPrintTests.m; sourceTree = "<group>"; };
-		123CE870962A5F52DEB959B2 /* Pods-AirPrint.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AirPrint.release.xcconfig"; path = "Target Support Files/Pods-AirPrint/Pods-AirPrint.release.xcconfig"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* AirPrint.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AirPrint.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = AirPrint/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = AirPrint/AppDelegate.mm; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = AirPrint/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = AirPrint/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = AirPrint/main.m; sourceTree = "<group>"; };
-		1E46634A0A68D4D5587E1986 /* Pods-AirPrint-AirPrintTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AirPrint-AirPrintTests.debug.xcconfig"; path = "Target Support Files/Pods-AirPrint-AirPrintTests/Pods-AirPrint-AirPrintTests.debug.xcconfig"; sourceTree = "<group>"; };
-		34625E75AEE813A48E176AF9 /* Pods-AirPrint.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AirPrint.debug.xcconfig"; path = "Target Support Files/Pods-AirPrint/Pods-AirPrint.debug.xcconfig"; sourceTree = "<group>"; };
-		3BFC38D7D40F2117A89694A3 /* Pods-AirPrint-AirPrintTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AirPrint-AirPrintTests.release.xcconfig"; path = "Target Support Files/Pods-AirPrint-AirPrintTests/Pods-AirPrint-AirPrintTests.release.xcconfig"; sourceTree = "<group>"; };
-		41F925D6E74036F703711B79 /* libPods-AirPrint.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AirPrint.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = AirPrint/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		9F569F51895253125097E7A3 /* libPods-AirPrint-AirPrintTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AirPrint-AirPrintTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		00E356F21AD99517003FC87E /* PrintDockTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PrintDockTests.m; sourceTree = "<group>"; };
+		123CE870962A5F52DEB959B2 /* Pods-PrintDock.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrintDock.release.xcconfig"; path = "Target Support Files/Pods-PrintDock/Pods-PrintDock.release.xcconfig"; sourceTree = "<group>"; };
+		13B07F961A680F5B00A75B9A /* PrintDock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrintDock.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = PrintDock/AppDelegate.h; sourceTree = "<group>"; };
+		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = PrintDock/AppDelegate.mm; sourceTree = "<group>"; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = PrintDock/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = PrintDock/Info.plist; sourceTree = "<group>"; };
+		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = PrintDock/main.m; sourceTree = "<group>"; };
+		1E46634A0A68D4D5587E1986 /* Pods-PrintDock-PrintDockTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrintDock-PrintDockTests.debug.xcconfig"; path = "Target Support Files/Pods-PrintDock-PrintDockTests/Pods-PrintDock-PrintDockTests.debug.xcconfig"; sourceTree = "<group>"; };
+		34625E75AEE813A48E176AF9 /* Pods-PrintDock.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrintDock.debug.xcconfig"; path = "Target Support Files/Pods-PrintDock/Pods-PrintDock.debug.xcconfig"; sourceTree = "<group>"; };
+		3BFC38D7D40F2117A89694A3 /* Pods-PrintDock-PrintDockTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrintDock-PrintDockTests.release.xcconfig"; path = "Target Support Files/Pods-PrintDock-PrintDockTests/Pods-PrintDock-PrintDockTests.release.xcconfig"; sourceTree = "<group>"; };
+		41F925D6E74036F703711B79 /* libPods-PrintDock.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PrintDock.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = PrintDock/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9F569F51895253125097E7A3 /* libPods-PrintDock-PrintDockTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PrintDock-PrintDockTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F571B3872BD7A3F80014213C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -53,7 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7082F40EB17F3004BEB57E53 /* libPods-AirPrint-AirPrintTests.a in Frameworks */,
+				7082F40EB17F3004BEB57E53 /* libPods-PrintDock-PrintDockTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,20 +61,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6A8B8815E2DB418E7A9ADB40 /* libPods-AirPrint.a in Frameworks */,
+				6A8B8815E2DB418E7A9ADB40 /* libPods-PrintDock.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		00E356EF1AD99517003FC87E /* AirPrintTests */ = {
+		00E356EF1AD99517003FC87E /* PrintDockTests */ = {
 			isa = PBXGroup;
 			children = (
-				00E356F21AD99517003FC87E /* AirPrintTests.m */,
+				00E356F21AD99517003FC87E /* PrintDockTests.m */,
 				00E356F01AD99517003FC87E /* Supporting Files */,
 			);
-			path = AirPrintTests;
+			path = PrintDockTests;
 			sourceTree = "<group>";
 		};
 		00E356F01AD99517003FC87E /* Supporting Files */ = {
@@ -85,7 +85,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		13B07FAE1A68108700A75B9A /* AirPrint */ = {
+		13B07FAE1A68108700A75B9A /* PrintDock */ = {
 			isa = PBXGroup;
 			children = (
 				F571B3872BD7A3F80014213C /* PrivacyInfo.xcprivacy */,
@@ -96,15 +96,15 @@
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
-			name = AirPrint;
+			name = PrintDock;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				41F925D6E74036F703711B79 /* libPods-AirPrint.a */,
-				9F569F51895253125097E7A3 /* libPods-AirPrint-AirPrintTests.a */,
+				41F925D6E74036F703711B79 /* libPods-PrintDock.a */,
+				9F569F51895253125097E7A3 /* libPods-PrintDock-PrintDockTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -119,9 +119,9 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* AirPrint */,
+				13B07FAE1A68108700A75B9A /* PrintDock */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
-				00E356EF1AD99517003FC87E /* AirPrintTests */,
+				00E356EF1AD99517003FC87E /* PrintDockTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
@@ -134,8 +134,8 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* AirPrint.app */,
-				00E356EE1AD99517003FC87E /* AirPrintTests.xctest */,
+				13B07F961A680F5B00A75B9A /* PrintDock.app */,
+				00E356EE1AD99517003FC87E /* PrintDockTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -143,10 +143,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				34625E75AEE813A48E176AF9 /* Pods-AirPrint.debug.xcconfig */,
-				123CE870962A5F52DEB959B2 /* Pods-AirPrint.release.xcconfig */,
-				1E46634A0A68D4D5587E1986 /* Pods-AirPrint-AirPrintTests.debug.xcconfig */,
-				3BFC38D7D40F2117A89694A3 /* Pods-AirPrint-AirPrintTests.release.xcconfig */,
+				34625E75AEE813A48E176AF9 /* Pods-PrintDock.debug.xcconfig */,
+				123CE870962A5F52DEB959B2 /* Pods-PrintDock.release.xcconfig */,
+				1E46634A0A68D4D5587E1986 /* Pods-PrintDock-PrintDockTests.debug.xcconfig */,
+				3BFC38D7D40F2117A89694A3 /* Pods-PrintDock-PrintDockTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -154,9 +154,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		00E356ED1AD99517003FC87E /* AirPrintTests */ = {
+		00E356ED1AD99517003FC87E /* PrintDockTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "AirPrintTests" */;
+			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "PrintDockTests" */;
 			buildPhases = (
 				B65D8C17718DEF461EE316EF /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
@@ -170,14 +170,14 @@
 			dependencies = (
 				00E356F51AD99517003FC87E /* PBXTargetDependency */,
 			);
-			name = AirPrintTests;
-			productName = AirPrintTests;
-			productReference = 00E356EE1AD99517003FC87E /* AirPrintTests.xctest */;
+			name = PrintDockTests;
+			productName = PrintDockTests;
+			productReference = 00E356EE1AD99517003FC87E /* PrintDockTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		13B07F861A680F5B00A75B9A /* AirPrint */ = {
+		13B07F861A680F5B00A75B9A /* PrintDock */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "AirPrint" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "PrintDock" */;
 			buildPhases = (
 				FF91D502BB80610F448F21D9 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
@@ -192,9 +192,9 @@
 			);
 			dependencies = (
 			);
-			name = AirPrint;
-			productName = AirPrint;
-			productReference = 13B07F961A680F5B00A75B9A /* AirPrint.app */;
+			name = PrintDock;
+			productName = PrintDock;
+			productReference = 13B07F961A680F5B00A75B9A /* PrintDock.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -214,7 +214,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "AirPrint" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "PrintDock" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -227,8 +227,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* AirPrint */,
-				00E356ED1AD99517003FC87E /* AirPrintTests */,
+				13B07F861A680F5B00A75B9A /* PrintDock */,
+				00E356ED1AD99517003FC87E /* PrintDockTests */,
 			);
 		};
 /* End PBXProject section */
@@ -276,15 +276,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AirPrint-AirPrintTests/Pods-AirPrint-AirPrintTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-PrintDock-PrintDockTests/Pods-PrintDock-PrintDockTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AirPrint-AirPrintTests/Pods-AirPrint-AirPrintTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-PrintDock-PrintDockTests/Pods-PrintDock-PrintDockTests-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AirPrint-AirPrintTests/Pods-AirPrint-AirPrintTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PrintDock-PrintDockTests/Pods-PrintDock-PrintDockTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		747394660BF9D714835DF373 /* [CP] Copy Pods Resources */ = {
@@ -293,15 +293,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AirPrint/Pods-AirPrint-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-PrintDock/Pods-PrintDock-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AirPrint/Pods-AirPrint-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-PrintDock/Pods-PrintDock-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AirPrint/Pods-AirPrint-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PrintDock/Pods-PrintDock-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		93DA718FB05BF2AF340302FC /* [CP] Embed Pods Frameworks */ = {
@@ -310,15 +310,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AirPrint-AirPrintTests/Pods-AirPrint-AirPrintTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-PrintDock-PrintDockTests/Pods-PrintDock-PrintDockTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AirPrint-AirPrintTests/Pods-AirPrint-AirPrintTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-PrintDock-PrintDockTests/Pods-PrintDock-PrintDockTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AirPrint-AirPrintTests/Pods-AirPrint-AirPrintTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PrintDock-PrintDockTests/Pods-PrintDock-PrintDockTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B62916F824A540865C895387 /* [CP] Embed Pods Frameworks */ = {
@@ -327,15 +327,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AirPrint/Pods-AirPrint-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-PrintDock/Pods-PrintDock-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AirPrint/Pods-AirPrint-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-PrintDock/Pods-PrintDock-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AirPrint/Pods-AirPrint-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PrintDock/Pods-PrintDock-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		B65D8C17718DEF461EE316EF /* [CP] Check Pods Manifest.lock */ = {
@@ -353,7 +353,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-AirPrint-AirPrintTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-PrintDock-PrintDockTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -394,7 +394,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-AirPrint-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-PrintDock-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -408,7 +408,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00E356F31AD99517003FC87E /* AirPrintTests.m in Sources */,
+				00E356F31AD99517003FC87E /* PrintDockTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,7 +426,7 @@
 /* Begin PBXTargetDependency section */
 		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 13B07F861A680F5B00A75B9A /* AirPrint */;
+			target = 13B07F861A680F5B00A75B9A /* PrintDock */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -434,14 +434,14 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1E46634A0A68D4D5587E1986 /* Pods-AirPrint-AirPrintTests.debug.xcconfig */;
+			baseConfigurationReference = 1E46634A0A68D4D5587E1986 /* Pods-PrintDock-PrintDockTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = AirPrintTests/Info.plist;
+				INFOPLIST_FILE = PrintDockTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -453,19 +453,19 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.nexkit.printdock.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AirPrint.app/AirPrint";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PrintDock.app/PrintDock";
 			};
 			name = Debug;
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3BFC38D7D40F2117A89694A3 /* Pods-AirPrint-AirPrintTests.release.xcconfig */;
+			baseConfigurationReference = 3BFC38D7D40F2117A89694A3 /* Pods-PrintDock-PrintDockTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				INFOPLIST_FILE = AirPrintTests/Info.plist;
+				INFOPLIST_FILE = PrintDockTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -477,22 +477,22 @@
 					"-lc++",
 					"$(inherited)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.nexkit.printdock.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AirPrint.app/AirPrint";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PrintDock.app/PrintDock";
 			};
 			name = Release;
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 34625E75AEE813A48E176AF9 /* Pods-AirPrint.debug.xcconfig */;
+			baseConfigurationReference = 34625E75AEE813A48E176AF9 /* Pods-PrintDock.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HH673SN3QR;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = AirPrint/Info.plist;
+				INFOPLIST_FILE = PrintDock/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -503,8 +503,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = AirPrint;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nexkit.printdock;
+				PRODUCT_NAME = PrintDock;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -513,13 +513,13 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 123CE870962A5F52DEB959B2 /* Pods-AirPrint.release.xcconfig */;
+			baseConfigurationReference = 123CE870962A5F52DEB959B2 /* Pods-PrintDock.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HH673SN3QR;
-				INFOPLIST_FILE = AirPrint/Info.plist;
+				INFOPLIST_FILE = PrintDock/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -530,8 +530,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = AirPrint;
+				PRODUCT_BUNDLE_IDENTIFIER = com.nexkit.printdock;
+				PRODUCT_NAME = PrintDock;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -705,7 +705,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "AirPrintTests" */ = {
+		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "PrintDockTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				00E356F61AD99517003FC87E /* Debug */,
@@ -714,7 +714,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "AirPrint" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "PrintDock" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -723,7 +723,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "AirPrint" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "PrintDock" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

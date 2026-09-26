@@ -1,11 +1,11 @@
 # PrintDock UI and brand system
 
-PrintDock by Nexkit is the Android-first operator interface for the existing TCP-to-Bluetooth bridge. This increment changes presentation, preference handling and Android branding; it does not certify the print pipeline or make the unauthenticated TCP protocol safe for public networks.
+PrintDock by Nexkit is the Android-first operator interface for the raw-TCP bridge to compatible Bluetooth Classic or USB OTG bulk printers. This increment changes presentation, preference handling and Android branding; it does not certify either printer transport or make the unauthenticated TCP protocol safe for public networks.
 
 ## Product identity
 
 - Display name: **PrintDock**. Developer: **Nexkit**.
-- Compatibility identities remain `com.airprint`, React Native component `AirPrint`, and `airprint://printserver/...`. Do not rename these casually: installed data, intents, native modules and integrations rely on them.
+- The renamed Android application ID and experimental iOS bundle ID are `com.nexkit.printdock`; the React Native component is `PrintDock`, and Android control links use `printdock://printserver/...`. This is a separate Android installation from the former `com.airprint` identity; preferences are not migrated and integrations must update their links.
 - No Apple AirPrint, IPP or Bonjour implementation or affiliation is implied. Store-name/trademark clearance remains an owner responsibility.
 - The provided Nexkit logo is copied unchanged. White backing is intentional in dark mode because its lettering is dark.
 - Original project-local artwork lives in `src/theme/assets/brand/`; Android copies live in `android/app/src/main/res/drawable-nodpi/`. Source PNGs retain their alpha and aspect ratio.

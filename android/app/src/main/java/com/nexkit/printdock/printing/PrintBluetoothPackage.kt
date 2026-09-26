@@ -1,13 +1,13 @@
-package com.airprint.printing
+package com.nexkit.printdock.printing
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 
-class UsbPrintPackage : ReactPackage {
+class PrintBluetoothPackage : ReactPackage {
     override fun createNativeModules(context: ReactApplicationContext): List<NativeModule> =
-        listOf(UsbPrintModule(context))
+        listOf(PrintBluetoothModule(context))
 
     override fun createViewManagers(context: ReactApplicationContext): List<ViewManager<*, *>> =
         emptyList()

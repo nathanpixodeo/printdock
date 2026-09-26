@@ -12,7 +12,9 @@ interface NativeBluetooth {
 }
 
 function nativeBluetooth(): NativeBluetooth {
-  const module = NativeModules.AirPrintBluetooth as NativeBluetooth | undefined;
+  const module = NativeModules.PrintDockBluetooth as
+    | NativeBluetooth
+    | undefined;
   if (!module) {
     throw new Error('Bluetooth printing requires the native Android app.');
   }
@@ -27,7 +29,7 @@ export const bluetoothSerial = {
   list: () => nativeBluetooth().list(),
   onDisconnected: (sessionId: number, listener: () => void) => {
     const subscription = DeviceEventEmitter.addListener(
-      'AirPrintBluetoothDisconnected',
+      'PrintDockBluetoothDisconnected',
       (event: { sessionId?: number } | null) => {
         if (event?.sessionId === sessionId) {
           listener();

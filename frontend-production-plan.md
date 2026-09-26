@@ -1,11 +1,11 @@
 # Frontend production refactor
 
-Status: implementation approved on 2026-09-25. Display brand is PrintDock by Nexkit; Vietnamese is implemented alongside English/French. Existing TCP/Bluetooth service hardening and uncommitted user changes are preserved. Native build, 73 tests, TypeScript, ESLint, formatting, production-mode bundle, and earlier branded-APK emulator flows passed. After a user factory reset, the branded APK reinstalled and fresh-install Home/Settings, all three languages, both themes, and the Nearby devices denial/settings path rendered. A guest `system` ANR and a PrintDock focus ANR interrupted further tests; the VM then stalled on a lower-memory restart and is currently powered off. Fresh-install persistence/recovery, stable emulator operation and physical-printer acceptance remain open. See `docs/genymotion-testing.md` for executed evidence and the retained bugreport.
+Status: historical frontend plan approved on 2026-09-25. The later full-identity rename changes Android/iOS IDs, React Native registration, deep links, and repository URL; the verification below predates that rename and must not be used as evidence for the newly identified app. Display brand is PrintDock by Nexkit; Vietnamese is implemented alongside English/French. Native build, 73 tests, TypeScript, ESLint, formatting, production-mode bundle, and earlier branded-APK emulator flows passed for the former ID. After a user factory reset, the branded APK reinstalled and fresh-install Home/Settings, all three languages, both themes, and the Nearby devices denial/settings path rendered. A guest `system` ANR and a PrintDock focus ANR interrupted further tests; the VM then stalled on a lower-memory restart. Fresh-install persistence/recovery, stable emulator operation and physical-printer acceptance remain open. See `docs/genymotion-testing.md` for executed evidence and the retained bugreport.
 
 ## Scope and direction
 
 - Android-first React Native 0.75 UI; no framework migration or new web animation dependencies. iOS remains unqualified until built and tested on macOS.
-- Rename the display brand to PrintDock, retaining package/component/deep-link identities. The new mark must not imply Apple AirPrint protocol compatibility; the user-supplied Nexkit developer logo is preserved.
+- Rename the app identity to PrintDock across package/component/deep links in the later approved increment. This creates a separate Android installation; old data is not migrated. The new mark must not imply Apple AirPrint protocol compatibility; the user-supplied Nexkit developer logo is preserved.
 - Calm ink-blue, teal and warm-neutral visual language, semantic light/dark tokens, system typography, consistent vector interface icons, and generous touch targets.
 - Home: clear connection/readiness status, actionable printer/permission/network states, explicit port validation, discoverable start/stop action, and no fabricated activity metrics.
 - Settings: explicit accessible theme/language choices, app information, and persistent preferences.
@@ -20,7 +20,7 @@ Status: implementation approved on 2026-09-25. Display brand is PrintDock by Nex
 4. A bounded worker owns only preference persistence/language schema and associated tests after language choice is fixed.
 5. Integrate Settings and translations against the shared UI contract; run format, lint, strict types and unit tests.
 6. Build an x86_64 debug APK, install without clearing app data, and verify real screens, validation, navigation, preference persistence, permission recovery and safe external-link behavior on Genymotion.
-7. Record artifacts, observed failures and untested production gates. No commit, push, release or version tag is implied.
+7. Record artifacts, observed failures and untested production gates. The original frontend increment implied no release or version tag; subsequent source commits remain pre-production.
 
 ## Baseline findings
 

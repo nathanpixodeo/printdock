@@ -4,6 +4,6 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
     // Use the installed, lockfile-controlled CLI; avoid npx downloads and Windows shell quoting.
     ex.autolinkLibrariesFromCommand(["node", file("../node_modules/react-native/cli.js").absolutePath, "config"])
 }
-rootProject.name = 'AirPrint'
+rootProject.name = 'PrintDock'
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')

@@ -1,16 +1,16 @@
 {
-  "name": "airprint",
+  "name": "printdock",
   "version": "0.0.1",
   "private": true,
   "packageManager": "yarn@1.22.22",
   "description": "PrintDock by Nexkit: a React Native Android bridge from raw LAN TCP jobs to compatible Bluetooth Classic or USB OTG bulk receipt printers. Pre-production; iOS experimental.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nathanpixodeo/air-print-app.git"
+    "url": "git+https://github.com/nathanpixodeo/printdock.git"
   },
-  "homepage": "https://github.com/nathanpixodeo/air-print-app#readme",
+  "homepage": "https://github.com/nathanpixodeo/printdock#readme",
   "bugs": {
-    "url": "https://github.com/nathanpixodeo/air-print-app/issues"
+    "url": "https://github.com/nathanpixodeo/printdock/issues"
   },
   "keywords": [
     "react-native",

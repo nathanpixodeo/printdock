@@ -1,35 +1,35 @@
 # Repository metadata and release guide
 
-This guide defines the release process for AirPrint. A debug/JS CI workflow is now checked in, but hosted execution, signing, store distribution, branch protection, and release gates are not certified. At assessment baseline `ebb5947`, no local tags were present; no version tag has been created by this work. The app is pre-production and the [production-readiness gates](production-readiness.md) must precede a release claim.
+This guide defines the release process for PrintDock. A debug/JS CI workflow is checked in, but one hosted run or a passing debug build is not signing, store distribution, branch protection, or release certification. No version tag is implied by these instructions. The app is pre-production and the [production-readiness gates](production-readiness.md) must precede a release claim.
 
 ## Repository description and topic tags
 
-[`.github/repository-metadata.json`](../.github/repository-metadata.json) is the reviewed source for the GitHub description and topics. GitHub does not automatically apply this custom JSON file. `package.json` mirrors the description and keywords and includes repository, homepage, and issue links; `private: true` continues to prevent accidental npm publication.
+[`repository-metadata.json`](../.github/repository-metadata.json) is the reviewed source for the GitHub description, homepage, and topics. GitHub does not automatically apply this custom JSON file. `package.json` includes corresponding package metadata, homepage, and issue links; `private: true` continues to prevent accidental npm publication.
 
 Description:
 
-> React Native Android app that bridges raw TCP print jobs over LAN to paired Bluetooth thermal printers, with foreground-service controls and a TypeScript UI. Pre-production; iOS experimental.
+> PrintDock by Nexkit: an Android raw-TCP bridge for compatible Bluetooth Classic and USB OTG bulk receipt printers. Pre-production; iOS experimental.
 
 Topics:
 
-`react-native`, `typescript`, `android`, `bluetooth`, `thermal-printer`, `escpos`, `tcp-server`, `print-server`, `point-of-sale`, `receipt-printer`, `foreground-service`, `lan-printing`, `mobile-app`.
+`react-native`, `typescript`, `android`, `bluetooth`, `usb-otg`, `thermal-printer`, `escpos`, `tcp-server`, `print-server`, `point-of-sale`, `receipt-printer`, `foreground-service`, `lan-printing`, `mobile-app`.
 
 `escpos` describes a relevant printer command stream that clients may supply; the app is not an ESC/POS document renderer. Do not add Apple AirPrint, certified-printer, or iOS-production claims without implementing and validating them.
 
 To inspect hosted metadata with the GitHub CLI:
 
 ```sh
-gh repo view nathanpixodeo/air-print-app --json nameWithOwner,description,repositoryTopics,visibility
+gh repo view nathanpixodeo/printdock --json nameWithOwner,description,homepageUrl,repositoryTopics,visibility
 ```
 
-To apply the checked-in description and add its topics from PowerShell, after reviewing the JSON:
+To apply the checked-in description, homepage, and topics from PowerShell, after reviewing the JSON:
 
 ```powershell
 $repoMetadata = Get-Content -Raw .github/repository-metadata.json | ConvertFrom-Json
-gh repo edit $repoMetadata.repository --description $repoMetadata.description --add-topic ($repoMetadata.topics -join ',')
+gh repo edit $repoMetadata.repository --description $repoMetadata.description --homepage $repoMetadata.homepage --add-topic ($repoMetadata.topics -join ',')
 ```
 
-Adding topics preserves any existing topics. Review obsolete topics before removing them. Repository visibility, access, and branch settings are separate from description/topics; this metadata procedure does not change them. Local `.git/description` is not GitHub's About description and is not a versioned project deliverable.
+Adding topics preserves any existing topics. Review obsolete topics before removing them. The homepage currently points to this repository's README, not to a separate product website. Repository visibility, access, and branch settings are separate from About metadata; this procedure does not change them. Local `.git/description` is not GitHub's About description and is not a versioned project deliverable.
 
 ## Version and tag policy
 
@@ -131,7 +131,7 @@ git tag -a v1.0.0-rc.1 FULL_VALIDATED_COMMIT_SHA -F docs/releases/v1.0.0-rc.1.md
 git show --no-patch v1.0.0-rc.1
 git rev-list -n 1 v1.0.0-rc.1
 git push origin refs/tags/v1.0.0-rc.1
-gh release create v1.0.0-rc.1 --repo nathanpixodeo/air-print-app --verify-tag --prerelease --draft --title "AirPrint 1.0.0-rc.1 - Android release candidate" --notes-file docs/releases/v1.0.0-rc.1.md
+gh release create v1.0.0-rc.1 --repo nathanpixodeo/printdock --verify-tag --prerelease --draft --title "PrintDock 1.0.0-rc.1 - Android release candidate" --notes-file docs/releases/v1.0.0-rc.1.md
 ```
 
 Use `--verify-tag` to prevent GitHub CLI from silently creating a missing tag. Upload only validated artifacts and their checksum manifest; keep receipt fixtures containing personal data, credentials, debug logs, private signing files, and internal secrets out of release assets. No tag/push/release-creation command is executed merely by adding these instructions.

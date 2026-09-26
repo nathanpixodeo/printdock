@@ -20,7 +20,7 @@
       android:theme="@style/AppTheme"
       android:supportsRtl="true">
     <receiver
-        android:name="com.airprint.printing.UsbPermissionReceiver"
+        android:name="com.nexkit.printdock.printing.UsbPermissionReceiver"
         android:exported="false" />
     
     <service android:name="com.asterinet.react.bgactions.RNBackgroundActionsTask" android:foregroundServiceType="connectedDevice" android:exported="false"/>
@@ -41,7 +41,8 @@
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="airprint" android:host="printserver" />
+        <data android:scheme="printdock" android:host="printserver" android:path="/start" />
+        <data android:scheme="printdock" android:host="printserver" android:path="/stop" />
       </intent-filter>
     </activity>
   </application>

@@ -448,7 +448,7 @@ export class PrintServerService {
               taskDesc: `Listening on ${localIp}:${port}`,
               taskIcon: { name: 'printdock_monochrome', type: 'drawable' },
               color: '#087F70',
-              linkingURI: 'airprint://printserver/stop',
+              linkingURI: 'printdock://printserver/stop',
               parameters: { deviceId: selectedDevice.id, port },
             }),
           );

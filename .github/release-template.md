@@ -1,4 +1,4 @@
-# AirPrint <version> — <platform / channel>
+# PrintDock <version> — <platform / channel>
 
 <!-- Template only. Copy to docs/releases/<tag>.md for an actual release, replace every placeholder, and remove instructional comments before publishing. A static-review-only snapshot must explicitly say that builds/device tests were not run. -->
 

@@ -2,6 +2,16 @@
 
 Use Genymotion for Android installation, startup, navigation, settings, validation, and crash checks. It does not certify Bluetooth Classic SPP printing, physical receipts, OEM background behavior, or printer fault recovery.
 
+All `artifacts/` paths below describe ignored files retained on the test workstation. They are evidence identifiers, not downloadable files in a fresh clone or published release assets. Rebuild from the recorded source commit when a local artifact is unavailable; a new build has a different identity and must be rehashed and retested.
+
+The historical runs in the longer record below used the former `com.airprint` application ID. After the full PrintDock rename, the new `com.nexkit.printdock` APK installs as a separate app; those old screenshots and hashes do not validate its installation, data migration, or runtime. The procedural commands later in this guide target the new ID.
+
+## Full-identity PrintDock smoke test (2026-09-26)
+
+- A local x86_64 `:app:assembleDebug :app:lintDebug` completed after the Android package/RN component/deep-link rename. The generated `android/app/build/outputs/apk/debug/app-debug.apk` has SHA-256 `29e4e1a169a45e847f4b209eba608731ed8d8ce0af7ab7ed0213fc1ddb94aadd`. `aapt` reports package `com.nexkit.printdock`, version `0.0.1`/code `1`, launchable activity `com.nexkit.printdock.MainActivity`, label PrintDock, and `printdock://printserver` intent-filter entries. This is a debug APK requiring Metro, not a release artifact.
+- The APK installed with `adb install -r` on the running Genymotion Android 14 Galaxy S24 without uninstalling the former app. `adb reverse tcp:8081 tcp:8081` connected it to the existing Metro server; a cold `am start -W -n com.nexkit.printdock/.MainActivity` returned `Status: ok` and a running process. Home rendered with PrintDock branding, a stopped server, default port 9100, Bluetooth/USB choices, and no selected printer. UI evidence is in local ignored `artifacts/genymotion/printdock-rename-*` files.
+- The new `printdock://printserver/start` intent resolved to the running app. With no printer selected it displayed the expected invalid-configuration alert rather than starting a listener. A `printdock://printserver/stop` intent also resolved but did nothing because the server was already stopped. No physical printer, USB permission/bulk transfer, Bluetooth print, sustained background operation, or iOS build was tested. The app was not checked for migration from the former package; none is implemented.
+
 ## Local verification record (2026-09-25–26)
 
 - Build: **passed**, `:app:assembleDebug` with `reactNativeArchitectures=x86_64`.
@@ -81,7 +91,7 @@ Forward the emulator's port to the local development server and launch:
 
 ```powershell
 adb -s $deviceSerial reverse tcp:8081 tcp:8081
-adb -s $deviceSerial shell am start -W -n com.airprint/.MainActivity
+adb -s $deviceSerial shell am start -W -n com.nexkit.printdock/.MainActivity
 ```
 
 If a red error screen says the development server is unavailable, confirm Metro is running and inspect `adb -s $deviceSerial reverse --list`. Do not disable a firewall globally or expose Metro publicly as a workaround.
@@ -103,11 +113,11 @@ Use UI hierarchy bounds before automated taps, then capture the resulting screen
 
 ```powershell
 New-Item -ItemType Directory -Force artifacts/genymotion | Out-Null
-adb -s $deviceSerial shell uiautomator dump /sdcard/airprint-smoke-ui.xml
-adb -s $deviceSerial pull /sdcard/airprint-smoke-ui.xml artifacts/genymotion/ui.xml
-adb -s $deviceSerial shell screencap -p /sdcard/airprint-smoke-screen.png
-adb -s $deviceSerial pull /sdcard/airprint-smoke-screen.png artifacts/genymotion/screen.png
-$appProcessId = (adb -s $deviceSerial shell pidof -s com.airprint).Trim()
+adb -s $deviceSerial shell uiautomator dump /sdcard/printdock-smoke-ui.xml
+adb -s $deviceSerial pull /sdcard/printdock-smoke-ui.xml artifacts/genymotion/ui.xml
+adb -s $deviceSerial shell screencap -p /sdcard/printdock-smoke-screen.png
+adb -s $deviceSerial pull /sdcard/printdock-smoke-screen.png artifacts/genymotion/screen.png
+$appProcessId = (adb -s $deviceSerial shell pidof -s com.nexkit.printdock).Trim()
 if ($appProcessId) {
     adb -s $deviceSerial logcat -d --pid=$appProcessId
 }

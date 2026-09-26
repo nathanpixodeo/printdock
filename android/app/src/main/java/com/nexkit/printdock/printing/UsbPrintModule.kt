@@ -1,4 +1,4 @@
-package com.airprint.printing
+package com.nexkit.printdock.printing
 
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -462,7 +462,7 @@ class UsbPrintModule(context: ReactApplicationContext) : ReactContextBaseJavaMod
     }
 
     companion object {
-        private const val PERMISSION_ACTION_PREFIX = "com.airprint.printing.USB_PERMISSION."
+        private const val PERMISSION_ACTION_PREFIX = "com.nexkit.printdock.printing.USB_PERMISSION."
         private const val PERMISSION_TIMEOUT_MS = 65_000L
         private const val WRITE_DEADLINE_MS = 30_000L
         private const val BULK_TIMEOUT_MS = 2_000

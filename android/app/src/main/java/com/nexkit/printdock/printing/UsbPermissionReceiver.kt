@@ -1,4 +1,4 @@
-package com.airprint.printing
+package com.nexkit.printdock.printing
 
 import android.content.BroadcastReceiver
 import android.content.Context

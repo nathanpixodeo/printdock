@@ -14,6 +14,6 @@ export function parsePort(value: string): number | null {
 export type PrintServerAction = 'start' | 'stop';
 
 export function parsePrintServerLink(url: string): PrintServerAction | null {
-  const match = /^airprint:\/\/printserver\/(start|stop)$/.exec(url);
+  const match = /^printdock:\/\/printserver\/(start|stop)$/.exec(url);
   return (match?.[1] as PrintServerAction | undefined) ?? null;
 }

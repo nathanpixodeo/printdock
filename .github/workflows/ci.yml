@@ -66,7 +66,13 @@ jobs:
           corepack prepare yarn@1.22.22 --activate
           yarn install --frozen-lockfile --non-interactive
       - name: Install Android SDK components
-        run: sdkmanager 'platforms;android-34' 'build-tools;34.0.0' 'ndk;26.1.10909125'
+        run: |
+          sdkmanager_path="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
+          if [[ ! -x "$sdkmanager_path" ]]; then
+            echo "Android SDK command-line tools not found at $sdkmanager_path" >&2
+            exit 1
+          fi
+          "$sdkmanager_path" 'platforms;android-34' 'build-tools;34.0.0' 'ndk;26.1.10909125'
       - name: Build and lint Android debug
         working-directory: android
         run: bash ./gradlew --no-daemon assembleDebug lintDebug

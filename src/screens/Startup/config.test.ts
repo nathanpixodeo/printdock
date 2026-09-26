@@ -21,15 +21,15 @@ describe('printer control input', () => {
   });
 
   it('accepts only exact control links', () => {
-    expect(parsePrintServerLink('airprint://printserver/start')).toBe('start');
-    expect(parsePrintServerLink('airprint://printserver/stop')).toBe('stop');
+    expect(parsePrintServerLink('printdock://printserver/start')).toBe('start');
+    expect(parsePrintServerLink('printdock://printserver/stop')).toBe('stop');
     for (const url of [
       'https://printserver/start',
-      'airprint://evil/printserver/start',
-      'airprint://printserver/start/extra',
-      'airprint://printserver/start?port=9100',
-      'airprint://printserver/stop#again',
-      'airprint://printserver/start/../stop',
+      'printdock://evil/printserver/start',
+      'printdock://printserver/start/extra',
+      'printdock://printserver/start?port=9100',
+      'printdock://printserver/stop#again',
+      'printdock://printserver/start/../stop',
     ]) {
       expect(parsePrintServerLink(url)).toBeNull();
     }

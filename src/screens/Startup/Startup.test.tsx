@@ -201,13 +201,13 @@ describe('Startup controls', () => {
     await renderReady();
     act(() => {
       onUrl?.({ url: 'https://evil.example/printserver/start' });
-      onUrl?.({ url: 'airprint://printserver/start?port=9100' });
+      onUrl?.({ url: 'printdock://printserver/start?port=9100' });
     });
     expect(Alert.alert).not.toHaveBeenCalled();
     expect(printServerService.start).not.toHaveBeenCalled();
 
     act(() => {
-      onUrl?.({ url: 'airprint://printserver/start' });
+      onUrl?.({ url: 'printdock://printserver/start' });
     });
     expect(Alert.alert).toHaveBeenCalledWith(
       'print_server.confirm_start_title',

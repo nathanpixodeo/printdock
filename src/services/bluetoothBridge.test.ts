@@ -5,7 +5,7 @@ import { bluetoothSerial } from './bluetoothSerial';
 
 jest.mock('react-native', () => ({
   NativeModules: {
-    AirPrintBluetooth: { write: jest.fn().mockResolvedValue(true) },
+    PrintDockBluetooth: { write: jest.fn().mockResolvedValue(true) },
   },
   DeviceEventEmitter: {
     addListener: jest.fn(),
@@ -20,11 +20,11 @@ it('encodes raw Buffer bytes for the app-owned native writer', async () => {
     bluetoothSerial: { write(data: Buffer): Promise<boolean> };
   };
   const reactNative = jest.requireMock('react-native') as {
-    NativeModules: { AirPrintBluetooth: { write: jest.Mock } };
+    NativeModules: { PrintDockBluetooth: { write: jest.Mock } };
   };
   await bridge.write(Buffer.from([0x00, 0xff, 0x80, 0x01]));
   expect(
-    reactNative.NativeModules.AirPrintBluetooth.write,
+    reactNative.NativeModules.PrintDockBluetooth.write,
   ).toHaveBeenCalledWith('AP+AAQ==');
 });
 

@@ -1,4 +1,4 @@
-package com.airprint.printing
+package com.nexkit.printdock.printing
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
@@ -29,7 +29,7 @@ class PrintBluetoothModule(context: ReactApplicationContext) : ReactContextBaseJ
     private val closing = mutableSetOf<BluetoothSocket>()
     private var disposed = false
 
-    override fun getName() = "AirPrintBluetooth"
+    override fun getName() = "PrintDockBluetooth"
 
     private fun adapter(): BluetoothAdapter =
         (reactApplicationContext.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)
@@ -195,7 +195,7 @@ class PrintBluetoothModule(context: ReactApplicationContext) : ReactContextBaseJ
                 if (reactApplicationContext.hasActiveReactInstance()) {
                     val event = Arguments.createMap().apply { putDouble("sessionId", generation.toDouble()) }
                     reactApplicationContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-                        .emit("AirPrintBluetoothDisconnected", event)
+                        .emit("PrintDockBluetoothDisconnected", event)
                 }
             } catch (_: RuntimeException) {
                 // The React instance may be torn down between the active check and event dispatch.

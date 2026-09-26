@@ -9,7 +9,7 @@ import en from './en-EN.json';
 import fr from './fr-FR.json';
 import vi from './vi-VN.json';
 
-export const defaultNS = 'airprint' as const;
+export const defaultNS = 'printdock' as const;
 
 export const resources = {
   'en-EN': en,

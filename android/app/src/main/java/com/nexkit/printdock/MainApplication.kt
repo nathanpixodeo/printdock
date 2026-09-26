@@ -1,8 +1,8 @@
-package com.airprint
+package com.nexkit.printdock
 
 import android.app.Application
-import com.airprint.printing.PrintBluetoothPackage
-import com.airprint.printing.UsbPrintPackage
+import com.nexkit.printdock.printing.PrintBluetoothPackage
+import com.nexkit.printdock.printing.UsbPrintPackage
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost

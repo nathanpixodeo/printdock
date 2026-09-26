@@ -4,9 +4,9 @@ A React Native Android app that receives raw TCP print jobs over a local network
 
 **Pre-production.** Bounded queuing, lifecycle controls, automated tests, and Android build checks are implemented. Physical printer compatibility, background reliability, signing, and distribution are not certified. USB OTG is an unverified raw bulk-OUT transport, not a generic USB print driver. This app does **not** implement Apple's AirPrint protocol, IPP, or Bonjour discovery. iOS is experimental; the print service explicitly rejects non-Android platforms.
 
-[Production plan](docs/production-readiness.md) · [UI & brand system](docs/design-system.md) · [Release guide](docs/releasing.md) · [Changelog](CHANGELOG.md) · [Repository](https://github.com/nathanpixodeo/air-print-app)
+[Production plan](docs/production-readiness.md) · [UI & brand system](docs/design-system.md) · [Release guide](docs/releasing.md) · [Changelog](CHANGELOG.md) · [Repository](https://github.com/nathanpixodeo/printdock)
 
-PrintDock is the new display brand. The existing repository URL, Android package `com.airprint`, React Native registration name `AirPrint`, and `airprint://` links are intentionally retained for compatibility. Updating the APK does not require clearing app data. Nexkit is the developer brand; its supplied logo is preserved unchanged.
+PrintDock is the app and repository brand. The Android application ID and iOS bundle ID are `com.nexkit.printdock`; the React Native component is `PrintDock`, and control links use `printdock://`. This identity change does **not** upgrade the earlier `com.airprint` app in place: Android treats it as a separate app, existing preferences remain with the old installation, and old `airprint://` links must be updated by their callers. Do not remove the old app until any operator settings and unsettled receipts are reconciled. Nexkit is the developer brand; its supplied logo is preserved unchanged.
 
 ## Capabilities and boundaries
 
@@ -77,8 +77,8 @@ The 16 KiB batch reduces bridge calls by up to fourfold versus a 4 KiB call per 
 
 - [PrintServerService](src/services/printServer.ts) validates endpoints, serializes lifecycle changes, publishes immutable snapshots, and coordinates native/background resources.
 - [PrintPipeline](src/services/printPipeline.ts) owns client timers, buffers, queue admission, and sequential writes.
-- [bluetoothSerial.ts](src/services/bluetoothSerial.ts) adapts binary writes and session-scoped disconnect events to [PrintBluetoothModule.kt](android/app/src/main/java/com/airprint/printing/PrintBluetoothModule.kt).
-- [usbPrinter.ts](src/services/usbPrinter.ts) adapts device discovery, binary writes and session-scoped detach events to [UsbPrintModule.kt](android/app/src/main/java/com/airprint/printing/UsbPrintModule.kt). USB permission is requested by Android when connecting; USB discovery itself needs no Bluetooth permission.
+- [bluetoothSerial.ts](src/services/bluetoothSerial.ts) adapts binary writes and session-scoped disconnect events to [PrintBluetoothModule.kt](android/app/src/main/java/com/nexkit/printdock/printing/PrintBluetoothModule.kt).
+- [usbPrinter.ts](src/services/usbPrinter.ts) adapts device discovery, binary writes and session-scoped detach events to [UsbPrintModule.kt](android/app/src/main/java/com/nexkit/printdock/printing/UsbPrintModule.kt). USB permission is requested by Android when connecting; USB discovery itself needs no Bluetooth permission.
 - Bluetooth uses paired Classic SPP UUID `00001101-0000-1000-8000-00805F9B34FB`. USB enumerates attached printer-class or vendor-specific interfaces with a bulk-OUT endpoint, claims one interface, and sends raw bytes. Neither the USB class code nor an endpoint alone proves the device understands the sender's command stream. No payload logging or automatic retry.
 - [Startup.tsx](src/screens/Startup/Startup.tsx) subscribes with `useSyncExternalStore`; navigation/theme changes do not own or restart the service.
 
@@ -102,8 +102,8 @@ This baseline is **not** evidence of current store compliance. RN/SDK modernizat
 Use authorized SSH/Git credential-manager access to this private repository; never embed tokens in URLs.
 
 ```sh
-git clone https://github.com/nathanpixodeo/air-print-app.git
-cd air-print-app
+git clone https://github.com/nathanpixodeo/printdock.git
+cd printdock
 # Select Node 22.23.3 with your Node version manager first.
 corepack enable
 corepack prepare yarn@1.22.22 --activate
@@ -138,7 +138,7 @@ cd ..
 yarn ios
 ```
 
-Open `ios/AirPrint.xcworkspace`. Identity, deployment target, Pods, permission descriptions, and URL registration need review. The new SPP bridge is Android-only. A legitimate accessory/background model must be demonstrated before iOS support is promised; see [IOS-01](docs/production-readiness.md).
+Open `ios/PrintDock.xcworkspace`. The Xcode project, scheme, target, and bundle ID were renamed, but this was a static edit on Windows: run `pod install` on macOS, update `Podfile.lock` if it changes, and perform an actual Xcode build before relying on it. Deployment target, permissions, and URL registration still need review. The new SPP bridge is Android-only. A legitimate accessory/background model must be demonstrated before iOS support is promised; see [IOS-01](docs/production-readiness.md).
 
 ## Operator workflow
 
@@ -150,7 +150,7 @@ Open `ios/AirPrint.xcworkspace`. Identity, deployment target, Pods, permission d
 Example from a computer on that LAN; replace the address:
 
 ```sh
-node -e 'const net = require("node:net"); const s = net.createConnection({host: "192.168.1.50", port: 9100}, () => s.end(Buffer.from("AirPrint test\n\n\n", "ascii"))); s.setTimeout(5000, () => s.destroy(new Error("TCP timeout"))); s.on("error", e => { console.error(e.message); process.exitCode = 1; });'
+node -e 'const net = require("node:net"); const s = net.createConnection({host: "192.168.1.50", port: 9100}, () => s.end(Buffer.from("PrintDock test\n\n\n", "ascii"))); s.setTimeout(5000, () => s.destroy(new Error("TCP timeout"))); s.on("error", e => { console.error(e.message); process.exitCode = 1; });'
 ```
 
 This quoting works in PowerShell or POSIX shells. Only use plain text if supported by the printer. Do not resubmit an uncertain receipt until an operator reconciles what printed.
@@ -161,7 +161,7 @@ This path is Android USB **host** mode: the printer plugs into the phone, not in
 
 To qualify a model, record printer make/model, firmware, USB VID:PID, interface/endpoint descriptors, phone/Android version, OTG adapter and power arrangement, and the documented command language. Test byte-exact fixtures, repeated jobs, disconnect during permission/printing, denial/regrant, paper-out, screen-off, and stop/restart on a physical phone. Genymotion and mocked tests cannot establish USB host or paper-output compatibility. Until this matrix passes, USB is an experimental transport rather than a supported-printer promise.
 
-For a physical-phone development run, the retained arm64-oriented debug APK is `artifacts/genymotion/printdock-0.0.1-debug-arm64-usb-otg.apk` (SHA-256 `62852acbdc6a2ed0a9378c64d9b218a8244fb7d29ca7858ec7c6442b4ae78b94`). It requires Metro and is not a release candidate. Because the phone's USB port hosts the printer, ordinary USB-cable ADB and `adb reverse` may be unavailable during the print test: use Android wireless debugging and point the React Native development server at the computer's reachable LAN IP/port 8081, or use a verified hub/topology that supports the required roles and power. Confirm that the printer and phone stay attached and on the trusted LAN before sending a non-sensitive fixture. Do not install over a differently signed package without first resolving the signing/data-retention implications.
+For a physical-phone development run, build the **current** `com.nexkit.printdock` debug APK from source with `-PreactNativeArchitectures=arm64-v8a`; the [Genymotion guide](docs/genymotion-testing.md#build-and-install) shows the analogous Gradle command. The previously retained arm64 APK at `artifacts/genymotion/printdock-0.0.1-debug-arm64-usb-otg.apk` (SHA-256 `62852acbdc6a2ed0a9378c64d9b218a8244fb7d29ca7858ec7c6442b4ae78b94`) predates the identity rename and must **not** be treated as the current build. `artifacts/` is ignored and absent from a fresh clone. Debug APKs require Metro and are not release candidates. Because the phone's USB port hosts the printer, ordinary USB-cable ADB and `adb reverse` may be unavailable during the print test: use Android wireless debugging and point the React Native development server at the computer's reachable LAN IP/port 8081, or use a verified hub/topology that supports the required roles and power. Confirm that the printer and phone stay attached and on the trusted LAN before sending a non-sensitive fixture. Do not install over a differently signed package without first resolving the signing/data-retention implications.
 
 ## Configuration and external links
 
@@ -177,13 +177,13 @@ Only these exact lowercase URIs are accepted. Queries, fragments, other hosts/sc
 
 | URI                            | Action                                                                          |
 | ------------------------------ | ------------------------------------------------------------------------------- |
-| `airprint://printserver/start` | Confirm start using selected/persisted valid configuration after initialization |
-| `airprint://printserver/stop`  | Confirm stop/cleanup; also used by the service notification                     |
+| `printdock://printserver/start` | Confirm start using selected/persisted valid configuration after initialization |
+| `printdock://printserver/stop`  | Confirm stop/cleanup; also used by the service notification                     |
 
 The initial URL is consumed once per JS process. Busy transitions ignore external controls; every caller still passes service validation.
 
 ```sh
-adb shell am start -W -a android.intent.action.VIEW -d "airprint://printserver/stop" com.airprint
+adb shell am start -W -a android.intent.action.VIEW -d "printdock://printserver/stop" com.nexkit.printdock
 ```
 
 ## Quality checks and evidence
@@ -230,7 +230,7 @@ Reports should identify commit/version, phone/OS patch, printer/firmware, topolo
 ## Repository map
 
 ```text
-android/app/src/main/java/com/airprint/printing/  Owned SPP and USB OTG native modules
+android/app/src/main/java/com/nexkit/printdock/printing/  Owned SPP and USB OTG native modules
 src/services/                                   Lifecycle, pipeline, limits, adapter, tests
 src/screens/Startup/                            Controls, strict links, preferences
 src/screens/Settings/                           Theme, language, package version

@@ -14,6 +14,7 @@ Record user-facing changes and release evidence here. Version headings must corr
 ### PrintDock frontend
 
 - Rename the app experience to PrintDock and credit Nexkit; add Vietnamese while retaining English and French.
+- Align the Android package, experimental iOS project/bundle ID, React Native component, deep links, and repository name with PrintDock. The new Android ID installs as a separate app; old app data and links are not migrated.
 - Introduce a shared accessible design system for typography, controls, icons, status, and branded presentation.
 - Rework Home as a print-server controller with explicit paired-printer discovery and persistent configuration/actions while discovery is pending or fails.
 - Expand Settings with saved theme and language preferences, immediate language selection, and app information.
@@ -29,7 +30,7 @@ Record user-facing changes and release evidence here. Version headings must corr
 ### Release status
 
 - Pre-production: no signed candidate, hardware certification, store release, or version tag is created by these changes.
-- Android/UI version now follows package `0.0.1`; Android build code remains `1`. iOS is experimental and unchanged.
+- Android/UI version now follows package `0.0.1`; Android build code remains `1`. iOS is experimental; its project identity changes are not evidence of an iOS release.
 
 ### Android hardening
 
