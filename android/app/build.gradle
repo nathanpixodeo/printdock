@@ -73,11 +73,6 @@ def enableProguardInReleaseBuilds = false
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
-    compileSdkVersion 34
-    defaultConfig {
-        targetSdkVersion 34
-        minSdkVersion 21 
-    }
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
@@ -88,15 +83,21 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "0.0.1"
     }
     signingConfigs {
         release {
-            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
-                storeFile file(MYAPP_RELEASE_STORE_FILE)
-                storePassword MYAPP_RELEASE_STORE_PASSWORD
-                keyAlias MYAPP_RELEASE_KEY_ALIAS
-                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            def signingProperties = [
+                storeFile: providers.gradleProperty("MYAPP_RELEASE_STORE_FILE").orNull,
+                storePassword: providers.gradleProperty("MYAPP_RELEASE_STORE_PASSWORD").orNull,
+                keyAlias: providers.gradleProperty("MYAPP_RELEASE_KEY_ALIAS").orNull,
+                keyPassword: providers.gradleProperty("MYAPP_RELEASE_KEY_PASSWORD").orNull,
+            ]
+            if (signingProperties.values().every { it != null && !it.toString().isBlank() }) {
+                storeFile file(signingProperties.storeFile)
+                storePassword signingProperties.storePassword
+                keyAlias signingProperties.keyAlias
+                keyPassword signingProperties.keyPassword
             }
         }
     }
@@ -111,6 +112,35 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
+    }
+}
+
+def requiredReleaseSigningProperties = [
+    "MYAPP_RELEASE_STORE_FILE",
+    "MYAPP_RELEASE_STORE_PASSWORD",
+    "MYAPP_RELEASE_KEY_ALIAS",
+    "MYAPP_RELEASE_KEY_PASSWORD",
+]
+
+tasks.register("validateReleaseSigning") {
+    group = "verification"
+    description = "Checks that release signing properties are configured."
+    doLast {
+        def missingProperties = requiredReleaseSigningProperties.findAll { propertyName ->
+            def value = providers.gradleProperty(propertyName).orNull
+            value == null || value.isBlank()
+        }
+        if (!missingProperties.isEmpty()) {
+            throw new GradleException(
+                "Release signing is not configured. Supply these Gradle properties (or matching ORG_GRADLE_PROJECT_* environment variables): ${missingProperties.join(', ')}"
+            )
+        }
+    }
+}
+
+tasks.configureEach { task ->
+    if (task.name in ["preReleaseBuild", "validateSigningRelease"]) {
+        task.dependsOn("validateReleaseSigning")
     }
 }
 

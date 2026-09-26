@@ -1,56 +1,41 @@
-import { useCallback } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
 import { useErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
-import { useTheme } from '@/theme';
+import { AppButton, AppText } from '@/design/components';
+import { Icon } from '@/design/Icon';
+import { usePalette } from '@/design/tokens';
 
-import { IconByVariant } from '@/components/atoms';
-
-type Props = {
+export default function DefaultErrorScreen({
+  onReset,
+}: {
   onReset?: () => void;
-};
-
-function DefaultErrorScreen({ onReset }: Props) {
-  const { gutters, layout, colors, fonts } = useTheme();
+}) {
   const { t } = useTranslation();
   const { resetBoundary } = useErrorBoundary();
-
-  const handleReset = useCallback(() => {
-    resetBoundary();
-    onReset?.();
-  }, [onReset, resetBoundary]);
-
+  const palette = usePalette();
   return (
-    <View
-      style={[
-        layout.flex_1,
-        layout.justifyCenter,
-        layout.itemsCenter,
-        gutters.gap_16,
-        gutters.padding_16,
-      ]}
-    >
-      <IconByVariant
-        height={42}
-        path="fire"
-        stroke={colors.red500}
-        width={42}
+    <View style={[styles.screen, { backgroundColor: palette.background }]}>
+      <Icon color={palette.danger} name="alert" size={40} />
+      <AppText accessibilityRole="header" style={styles.center} variant="title">
+        {t('error_boundary.title')}
+      </AppText>
+      <AppText style={[styles.center, { color: palette.muted }]}>
+        {t('error_boundary.description')}
+      </AppText>
+      <AppButton
+        icon="refresh"
+        label={t('error_boundary.cta')}
+        onPress={() => {
+          resetBoundary();
+          onReset?.();
+        }}
       />
-      <Text style={[fonts.gray800, fonts.bold, fonts.size_16]}>
-        {t('airprint:error_boundary.title')}
-      </Text>
-      <Text style={[fonts.gray800, fonts.size_12, fonts.alignCenter]}>
-        {t('airprint:error_boundary.description')}
-      </Text>
-
-      <TouchableOpacity onPress={handleReset}>
-        <Text style={[fonts.gray800, fonts.size_16]}>
-          {t('airprint:error_boundary.cta')}
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 }
 
-export default DefaultErrorScreen;
+const styles = StyleSheet.create({
+  screen: { flex: 1, justifyContent: 'center', padding: 24, gap: 20 },
+  center: { textAlign: 'center' },
+});

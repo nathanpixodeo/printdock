@@ -1,104 +1,170 @@
-import { Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { Platform, StyleSheet, View } from 'react-native';
 
-import { useTheme } from '@/theme';
+import { parsePort } from '@/screens/Startup/config';
 
-import StatusBadge from '@/components/atoms/StatusBadge/StatusBadge';
+import { AppText } from '@/design/components';
+import { Icon } from '@/design/Icon';
+import { usePalette } from '@/design/tokens';
 
 type Props = {
-  isRunning: boolean;
-  ipAddress: string;
-  port: string;
+  status: 'stopped' | 'starting' | 'listening' | 'stopping' | 'failed';
+  ipAddress: string | null;
+  port: string | null;
   deviceName: string | null;
+  error: string | null;
+  queuedJobs?: number;
 };
 
-function ServerCard({
-  isRunning,
+export default function ServerCard({
+  status,
   ipAddress,
   port,
   deviceName,
+  error,
+  queuedJobs = 0,
 }: Props) {
-  const { backgrounds, borders, fonts, gutters, layout } = useTheme();
-
+  const { t } = useTranslation();
+  const palette = usePalette();
+  const validPort = port !== null && parsePort(port) !== null;
+  const ready = Boolean(deviceName && ipAddress && validPort);
+  const active = status === 'listening';
+  const title =
+    status === 'stopped'
+      ? ready
+        ? t('home.ready_title')
+        : t('home.standby_title')
+      : {
+          starting: t('home.starting_title'),
+          listening: t('home.listening_title'),
+          stopping: t('home.stopping_title'),
+          failed: t('home.failed_title'),
+        }[status];
+  const description =
+    status === 'failed'
+      ? t('home.failed_body')
+      : active
+        ? t('home.listening_body')
+        : ready
+          ? t('home.ready_body')
+          : t('home.standby_body');
   return (
-    <View
-      style={[
-        gutters.padding_24,
-        borders.rounded_16,
-        backgrounds.purple100,
-        {
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.1,
-          shadowRadius: 12,
-          elevation: 4,
-        },
-      ]}
-    >
-      {/* Header */}
-      <View style={[layout.row, layout.justifyBetween, layout.itemsCenter]}>
-        <Text style={[fonts.size_20, fonts.purple500, fonts.bold]}>
-          Print Server
-        </Text>
-        <StatusBadge
-          isActive={isRunning}
-          label={isRunning ? 'Running' : 'Stopped'}
-        />
+    <View style={[styles.card, { backgroundColor: palette.hero }]}>
+      <View style={styles.header}>
+        <AppText style={{ color: palette.heroMuted }} variant="eyebrow">
+          {t('home.status_label')}
+        </AppText>
+        <View
+          accessibilityLabel={t(`print_server.status.${status}`)}
+          accessibilityLiveRegion="polite"
+          accessibilityRole="text"
+          style={styles.badge}
+        >
+          <View
+            style={[
+              styles.dot,
+              {
+                backgroundColor: active
+                  ? palette.heroAccent
+                  : palette.heroMuted,
+              },
+            ]}
+          />
+          <AppText style={{ color: palette.onHero }} variant="caption">
+            {t(`print_server.status.${status}`)}
+          </AppText>
+        </View>
       </View>
-
-      {/* Divider */}
-      <View
-        style={[
-          gutters.marginVertical_16,
-          { height: 1, backgroundColor: 'rgba(0,0,0,0.08)' },
-        ]}
-      />
-
-      {/* Info rows */}
-      <InfoRow
-        label="IP Address"
-        value={ipAddress}
-        icon="🌐"
-      />
-      <InfoRow
-        label="Port"
-        value={port}
-        icon="🔌"
-      />
-      <InfoRow
-        label="Device"
-        value={deviceName ?? 'Not selected'}
-        icon="🖨️"
-      />
+      <View style={styles.message}>
+        <View style={styles.title}>
+          <AppText style={{ color: palette.onHero }} variant="title">
+            {title}
+          </AppText>
+          <AppText style={{ color: palette.heroMuted }} variant="caption">
+            {description}
+          </AppText>
+        </View>
+        <View style={styles.printer}>
+          <Icon color={palette.heroAccent} name="printer" size={34} />
+        </View>
+      </View>
+      <View style={styles.endpoint}>
+        <AppText style={{ color: palette.heroMuted }} variant="eyebrow">
+          {t('home.endpoint')}
+        </AppText>
+        <AppText
+          selectable
+          style={{
+            color: palette.onHero,
+            fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+          }}
+          variant="heading"
+        >
+          {ipAddress && validPort ? `${ipAddress}:${port}` : '—'}
+        </AppText>
+        <View style={styles.printerRow}>
+          <Icon color={palette.heroMuted} name="bluetooth" size={16} />
+          <AppText
+            style={{ color: palette.heroMuted, flex: 1 }}
+            variant="caption"
+          >
+            {deviceName ?? t('print_server.not_selected')}
+          </AppText>
+        </View>
+        {active ? (
+          <AppText style={{ color: palette.heroAccent }} variant="caption">
+            {t('home.queue', { count: queuedJobs })}
+          </AppText>
+        ) : null}
+      </View>
+      {error ? (
+        <AppText
+          accessibilityLiveRegion="polite"
+          style={{ color: '#FFD4D7' }}
+          variant="caption"
+        >
+          {error}
+        </AppText>
+      ) : null}
     </View>
   );
 }
 
-type InfoRowProps = {
-  label: string;
-  value: string;
-  icon: string;
-};
-
-function InfoRow({ label, value, icon }: InfoRowProps) {
-  const { fonts, gutters, layout } = useTheme();
-
-  return (
-    <View
-      style={[
-        layout.row,
-        layout.itemsCenter,
-        gutters.marginBottom_12,
-      ]}
-    >
-      <Text style={[fonts.size_16, { marginRight: 8 }]}>{icon}</Text>
-      <View style={[layout.flex_1]}>
-        <Text style={[fonts.size_12, fonts.gray400]}>{label}</Text>
-        <Text style={[fonts.size_16, fonts.gray800, fonts.bold]}>
-          {value}
-        </Text>
-      </View>
-    </View>
-  );
-}
-
-export default ServerCard;
+const styles = StyleSheet.create({
+  card: { borderRadius: 24, padding: 22, gap: 20 },
+  header: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 8,
+  },
+  badge: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    backgroundColor: '#24434D',
+  },
+  dot: { width: 6, height: 6, borderRadius: 3 },
+  message: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  title: { flex: 1, gap: 8 },
+  printer: {
+    width: 60,
+    height: 68,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#365561',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  endpoint: {
+    borderTopWidth: 1,
+    borderTopColor: '#365561',
+    paddingTop: 16,
+    gap: 6,
+  },
+  printerRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+});

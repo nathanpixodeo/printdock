@@ -2,9 +2,9 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import importPlugin from 'eslint-plugin-import';
 import jest from 'eslint-plugin-jest';
+import perfectionist from 'eslint-plugin-perfectionist';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
-import typescriptSortKeys from 'eslint-plugin-typescript-sort-keys';
 import unicorn from 'eslint-plugin-unicorn';
 import unusedImports from 'eslint-plugin-unused-imports';
 import tsEslint from 'typescript-eslint';
@@ -116,7 +116,7 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tsEslint.plugin,
-      'typescript-sort-keys': typescriptSortKeys,
+      perfectionist,
     },
     rules: {
       '@typescript-eslint/ban-ts-comment': 0,
@@ -127,8 +127,14 @@ export default [
       '@typescript-eslint/no-non-null-assertion': 0,
       '@typescript-eslint/no-unused-vars': 0, // handled by unused-imports plugin
       '@typescript-eslint/no-var-requires': 0,
-      'typescript-sort-keys/interface': 2,
-      'typescript-sort-keys/string-enum': 2,
+      'perfectionist/sort-interfaces': [
+        'error',
+        { type: 'alphabetical', order: 'asc' },
+      ],
+      'perfectionist/sort-enums': [
+        'error',
+        { type: 'alphabetical', order: 'asc', sortByValue: 'never' },
+      ],
     },
   },
   {
@@ -141,6 +147,12 @@ export default [
     },
   },
   {
-    ignores: ['metro.config.js'],
+    ignores: [
+      'metro.config.js',
+      'artifacts/**',
+      'coverage/**',
+      'android/**/build/**',
+      'ios/Pods/**',
+    ],
   },
 ];

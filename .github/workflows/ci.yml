@@ -1,0 +1,82 @@
+name: Mobile checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  javascript:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - name: Select pinned Yarn
+        run: corepack enable && corepack prepare yarn@1.22.22 --activate
+      - name: Install immutable dependencies
+        run: yarn install --frozen-lockfile --non-interactive
+      - name: Check types, lint and formatting
+        run: yarn lint
+      - name: Run tests and coverage
+        run: yarn test:report --runInBand
+        env:
+          JEST_JUNIT_OUTPUT_DIR: coverage
+      - name: Verify production JavaScript bundle
+        run: |
+          mkdir -p artifacts/bundle
+          yarn react-native bundle --platform android --dev false --entry-file index.js --bundle-output artifacts/bundle/index.android.bundle --assets-dest artifacts/bundle --max-workers 2
+      - name: Verify dependency lockfile
+        run: git diff --exit-code -- yarn.lock package.json
+      - name: Retain test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: javascript-test-reports
+          path: coverage/
+          if-no-files-found: warn
+          retention-days: 14
+
+  android-debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: javascript
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install JavaScript dependencies
+        run: |
+          corepack enable
+          corepack prepare yarn@1.22.22 --activate
+          yarn install --frozen-lockfile --non-interactive
+      - name: Install Android SDK components
+        run: sdkmanager 'platforms;android-34' 'build-tools;34.0.0' 'ndk;26.1.10909125'
+      - name: Build and lint Android debug
+        working-directory: android
+        run: bash ./gradlew --no-daemon assembleDebug lintDebug
+      - name: Retain Android debug evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-debug-evidence
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
+            android/app/build/reports/
+          if-no-files-found: warn
+          retention-days: 14

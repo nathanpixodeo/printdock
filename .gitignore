@@ -33,6 +33,20 @@ local.properties
 .cxx/
 *.keystore
 !debug.keystore
+*.jks
+*.p12
+*.pfx
+*.key
+
+# Environment files and local signing configuration
+.env
+.env.*
+!.env.example
+android/gradle.properties.local
+
+# CI/build output
+artifacts/
+release-output/
 
 # node.js
 #
@@ -64,6 +78,7 @@ yarn-error.log
 
 # testing
 /coverage
+/junit.xml
 
 # Yarn
 .yarn/*

@@ -15,6 +15,8 @@ const config = {
     unstable_allowRequireContext: true,
   },
   resolver: {
+    // Build evidence and temporary toolchains are not application sources.
+    blockList: [/[/\\]artifacts[/\\].*/, /[/\\]coverage[/\\].*/],
     sourceExts: [...sourceExts, 'svg'],
     assetExts: assetExts.filter((ext) => ext !== 'svg'),
   },

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@color/printdock_background</item>
+        <item name="android:windowSplashScreenBackground">@color/printdock_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/printdock_mark</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/printdock_ink</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/printdock_splash_branding</item>
+    </style>
+</resources>

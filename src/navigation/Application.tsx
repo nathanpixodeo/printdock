@@ -12,24 +12,19 @@ import Settings from '@/screens/Settings/Settings';
 const Stack = createStackNavigator<RootStackParamList>();
 
 function ApplicationNavigator() {
-  const { variant, navigationTheme } = useTheme();
+  const { navigationTheme } = useTheme();
 
   return (
     <SafeAreaProvider>
       <NavigationContainer theme={navigationTheme}>
         <Stack.Navigator
-          key={variant}
           screenOptions={{
             headerShown: false,
             animationEnabled: true,
           }}
         >
           <Stack.Screen component={Home} name="Home" />
-          <Stack.Screen
-            component={Settings}
-            name="Settings"
-            options={{ animation: 'slide_from_right' }}
-          />
+          <Stack.Screen component={Settings} name="Settings" />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

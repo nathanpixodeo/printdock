@@ -19,7 +19,9 @@ function AssetByVariant({ path, extension = 'png', ...props }: Props) {
 
   useEffect(() => {
     const loadImage = () => {
-      const defaultSource = images(`./${path}.${extension}`) as ImageSourcePropType;
+      const defaultSource = images(
+        `./${path}.${extension}`,
+      ) as ImageSourcePropType;
 
       if (variant === 'default') {
         setImage(defaultSource);

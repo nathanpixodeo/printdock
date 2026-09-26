@@ -12,12 +12,7 @@ type Props = Optional<ErrorBoundaryPropsWithFallback, 'fallback'> & {
   onReset?: () => void;
 };
 
-function ErrorBoundary({
-  fallback,
-  onReset,
-  onError,
-  ...props
-}: Props) {
+function ErrorBoundary({ fallback, onReset, onError, ...props }: Props) {
   const onErrorReport = useCallback(
     (error: Error, info: ErrorInfo) => {
       onError?.(error, info);

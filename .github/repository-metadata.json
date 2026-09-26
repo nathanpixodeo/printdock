@@ -1,0 +1,28 @@
+{
+  "repository": "nathanpixodeo/air-print-app",
+  "description": "PrintDock by Nexkit: an Android raw-TCP bridge for compatible Bluetooth Classic and USB OTG bulk receipt printers. Pre-production; iOS experimental.",
+  "topics": [
+    "react-native",
+    "typescript",
+    "android",
+    "bluetooth",
+    "usb-otg",
+    "thermal-printer",
+    "escpos",
+    "tcp-server",
+    "print-server",
+    "point-of-sale",
+    "receipt-printer",
+    "foreground-service",
+    "lan-printing",
+    "mobile-app"
+  ],
+  "releasePolicy": {
+    "stableTagExample": "v1.0.0",
+    "prereleaseTagExample": "v1.0.0-rc.1",
+    "annotatedTagsRequired": true,
+    "notesTemplate": ".github/release-template.md",
+    "guide": "docs/releasing.md",
+    "status": "planned; no release is certified by this metadata"
+  }
+}

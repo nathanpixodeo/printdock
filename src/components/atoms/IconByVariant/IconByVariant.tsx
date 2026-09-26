@@ -13,22 +13,15 @@ type Props = SvgProps & {
 const icons = getAssetsContext('icons');
 const EXTENSION = 'svg';
 
-function IconByVariant({
-  path,
-  width = 24,
-  height = 24,
-  ...props
-}: Props) {
-  const [IconComponent, setIconComponent] = useState<FC<SvgProps> | null>(
-    null,
-  );
+function IconByVariant({ path, width = 24, height = 24, ...props }: Props) {
+  const [IconComponent, setIconComponent] = useState<FC<SvgProps> | null>(null);
   const { variant } = useTheme();
 
   useEffect(() => {
     const loadIcon = () => {
-      const module = icons(
-        `./${path}.${EXTENSION}`,
-      ) as { default: FC<SvgProps> };
+      const module = icons(`./${path}.${EXTENSION}`) as {
+        default: FC<SvgProps>;
+      };
       const defaultIcon = module.default;
 
       if (variant === 'default') {
@@ -37,9 +30,9 @@ function IconByVariant({
       }
 
       try {
-        const variantModule = icons(
-          `./${variant}/${path}.${EXTENSION}`,
-        ) as { default: FC<SvgProps> };
+        const variantModule = icons(`./${variant}/${path}.${EXTENSION}`) as {
+          default: FC<SvgProps>;
+        };
         setIconComponent(() => variantModule.default);
       } catch {
         setIconComponent(() => defaultIcon);

@@ -6,13 +6,7 @@ import type {
 } from '@/theme/types/config';
 import type { ComponentTheme, Theme } from '@/theme/types/theme';
 
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { createContext, useCallback, useMemo, useState } from 'react';
 
 import {
   generateBackgrounds,
@@ -46,18 +40,9 @@ type Props = PropsWithChildren<{
 
 function ThemeProvider({ children, storage }: Props) {
   // Current theme variant
-  const [variant, setVariant] = useState(
-    (storage.getString('theme') as Variant) || 'default',
+  const [variant, setVariant] = useState<Variant>(() =>
+    storage.getString('theme') === 'dark' ? 'dark' : 'default',
   );
-
-  // Initialize theme at default if not defined
-  useEffect(() => {
-    const appHasThemeDefined = storage.contains('theme');
-    if (!appHasThemeDefined) {
-      storage.set('theme', 'default');
-      setVariant('default');
-    }
-  }, [storage]);
 
   const changeTheme = useCallback(
     (nextVariant: Variant) => {

@@ -4,6 +4,8 @@ import { name as appName } from './app.json';
 import App from './src/App';
 
 if (__DEV__) {
+  // Keep developer tooling out of production initialization.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   require('@/reactotron.config');
 }
 

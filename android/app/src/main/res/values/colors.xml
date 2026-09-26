@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="splashscreen_bg">#000000</color>
+    <color name="printdock_background">#F5F8F7</color>
+    <color name="printdock_ink">#102E3A</color>
+    <color name="printdock_teal">#087F70</color>
 </resources>

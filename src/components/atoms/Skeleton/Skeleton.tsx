@@ -39,7 +39,11 @@ function SkeletonLoader({
   useEffect(() => {
     if (loading && !isAnimating.current) {
       isAnimating.current = true;
-      opacity.value = withRepeat(withTiming(TO, { duration: DURATION }), -1, true);
+      opacity.value = withRepeat(
+        withTiming(TO, { duration: DURATION }),
+        -1,
+        true,
+      );
     }
 
     if (!loading) {

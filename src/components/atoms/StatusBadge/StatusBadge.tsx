@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import Animated, {
+  Easing,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
   withTiming,
-  Easing,
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/theme';
@@ -16,19 +16,20 @@ type Props = {
 };
 
 function StatusBadge({ isActive, label }: Props) {
-  const { backgrounds, borders, fonts, gutters, layout } = useTheme();
+  const { backgrounds, borders, fonts, gutters } = useTheme();
   const pulse = useSharedValue(1);
 
   useEffect(() => {
-    if (isActive) {
-      pulse.value = withRepeat(
-        withTiming(0.4, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
-        -1,
-        true,
-      );
-    } else {
-      pulse.value = 1;
-    }
+    pulse.value = isActive
+      ? withRepeat(
+          withTiming(0.4, {
+            duration: 1000,
+            easing: Easing.inOut(Easing.ease),
+          }),
+          -1,
+          true,
+        )
+      : 1;
   }, [isActive, pulse]);
 
   const animatedDot = useAnimatedStyle(() => ({
@@ -37,9 +38,12 @@ function StatusBadge({ isActive, label }: Props) {
 
   return (
     <View
+      accessibilityLabel={label}
+      accessibilityLiveRegion="polite"
+      accessibilityRole="text"
       style={[
         gutters.paddingHorizontal_12,
-        gutters.paddingVertical_4,
+        { paddingVertical: 4 },
         borders.rounded_16,
         isActive ? backgrounds.green500 : backgrounds.gray200,
         { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start' },

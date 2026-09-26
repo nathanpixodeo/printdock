@@ -6,12 +6,18 @@ module.exports = {
     '<rootDir>/jest.setup.js',
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!(jest-)?react-native|@react-native|@react-native-community|@react-navigation)',
+    'node_modules/(?!(jest-)?react-native|@react-native|@react-native-community|@react-navigation|@react-native-picker)',
   ],
   collectCoverageFrom: [
-    '<rootDir>/src/Components/**/*.{jsx,tsx}',
-    '<rootDir>/src/App.{ts,tsx}',
+    '<rootDir>/src/**/*.{ts,tsx}',
+    '!<rootDir>/src/**/*.d.ts',
+    '!<rootDir>/src/**/*.test.{ts,tsx}',
+    '!<rootDir>/src/**/index.ts',
+    '!<rootDir>/src/theme/assets/**',
+    '!<rootDir>/src/reactotron.config.ts',
   ],
+  clearMocks: true,
+  coverageDirectory: 'coverage',
   coverageReporters: ['html', 'text', 'text-summary', 'cobertura'],
   testMatch: ['**/*.test.{ts,tsx,js,jsx}'],
 };

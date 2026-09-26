@@ -63,4 +63,30 @@ describe('ThemeProvider', () => {
 
     expect(themeContext.children[0]).toBe('dark');
   });
+
+  it('restores a selected theme after unmounting and remounting', () => {
+    const first = render(
+      <ThemeProvider storage={storage}>
+        <TestChildComponent />
+      </ThemeProvider>,
+    );
+    fireEvent.press(first.getByTestId('change-btn'));
+    first.unmount();
+    const second = render(
+      <ThemeProvider storage={storage}>
+        <TestChildComponent />
+      </ThemeProvider>,
+    );
+    expect(second.getByTestId('theme-variant').children[0]).toBe('dark');
+  });
+
+  it('recovers safely from an invalid persisted theme', () => {
+    storage.set('theme', 'not-a-theme');
+    const screen = render(
+      <ThemeProvider storage={storage}>
+        <TestChildComponent />
+      </ThemeProvider>,
+    );
+    expect(screen.getByTestId('theme-variant').children[0]).toBe('default');
+  });
 });

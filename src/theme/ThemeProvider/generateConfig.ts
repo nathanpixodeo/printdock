@@ -12,16 +12,18 @@ function hasProperty<Config, KeyPath extends string>(
 ): configuration is HasProperty<Config, KeyPath> & Config {
   const parts = property.split('.');
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let currentObj: any = configuration;
+  let currentObj: unknown = configuration;
 
-  for (let i = 0; i < parts.length; i += 1) {
-    const part = parts[i];
-    if (!(part in currentObj)) {
+  for (const part of parts) {
+    if (
+      currentObj === null ||
+      typeof currentObj !== 'object' ||
+      !(part in currentObj)
+    ) {
       return false;
     }
 
-    currentObj = currentObj[part];
+    currentObj = (currentObj as Record<string, unknown>)[part];
   }
 
   return true;
