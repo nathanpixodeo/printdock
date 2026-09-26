@@ -195,7 +195,7 @@ yarn test:report --runInBand
 
 `lint` runs ESLint, source/mock formatting, and strict `tsc --noEmit`. `test:report` produces coverage and JUnit output (`JEST_JUNIT_OUTPUT_DIR=coverage` in CI). README/docs are outside the source formatting glob.
 
-[Mobile checks](.github/workflows/ci.yml) defines frozen installs, lint/types/tests, Android debug build/lint, and retained reports with read-only permissions and pinned actions. It does not sign releases, set branch protections, or prove a hosted run has passed.
+[Mobile checks](.github/workflows/ci.yml) defines frozen installs, lint/types/tests, Android debug build/lint, and retained reports with read-only permissions and pinned actions. The [hosted run for source commit `05f87b1`](https://github.com/nathanpixodeo/printdock/actions/runs/36230041288) passed both JavaScript and Android debug jobs. This does not sign releases, set branch protections, verify iOS, or qualify printer hardware.
 
 See [dated implementation evidence](docs/production-readiness.md#implementation-status-2026-09-25). Mocked JS tests do not execute Kotlin or establish device/background safety. Coverage, native builds, signing, physical faults, soak, and pilot remain separate gates.
 
